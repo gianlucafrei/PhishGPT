@@ -9,6 +9,7 @@ import base64
 import hashlib
 import binascii
 import json
+import openai
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
@@ -19,29 +20,31 @@ app.config['SECRET_KEY'] = uuid.uuid4().hex
 bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 
 # Setup OIDC client
-redirect_uri=app.config['REDIRECT_URI']
+redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
+
 
 @app.route('/')
 def index():
-
     user_info = get_userinfo_or_false()
 
     if user_info:
+        print(get_gpt_text("Davide Vanoni\nAdvanced Software Engineer at Zühlke Singapore"))
         return 'Welcome ' + user_info["email"]
     else:
         return 'Not logged in: Click here to <a href="/login">login</a>'
 
-# Redirect to this endoint to start the sign in with LinkedIn process
+
+# Redirect to this endpoint to start the sign in with LinkedIn process
 @app.route('/login')
 def login():
     uri, state = client.create_authorization_url("https://www.linkedin.com/oauth/v2/authorization", redirect_uri=redirect_uri, scope="r_emailaddress r_liteprofile")
     return redirect(uri)
 
+
 # This endpoint is called when the user is redirected back from linked in
 @app.route('/oidc_callback')
 def authorize():
-
     # Exchange access code for authorization token
     authorization_response = request.url
     token_endpoint = 'https://www.linkedin.com/oauth/v2/accessToken'
@@ -49,9 +52,10 @@ def authorize():
     token = client.fetch_token(token_endpoint, authorization_response=authorization_response, body=redirect_uri_encoded)
     access_token = token['access_token']
 
+    headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer {}'.format(access_token)}
+
     # Load user profile
     profile_api_url = "https://api.linkedin.com/v2/me"
-    headers = {'Content-Type': 'application/x-www-form-urlencoded','Authorization':'Bearer {}'.format(access_token)}
     response = requests.get(url=profile_api_url, headers=headers)
     profile = response.json()
     firstname = profile["localizedFirstName"]
@@ -59,7 +63,7 @@ def authorize():
     fullname = f"{firstname} {lastname}"
 
     # Load user email address
-    email_api_url = "https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))"
+    email_api_url = "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))"
     email_response = requests.get(url=email_api_url, headers=headers)
     email_response_body = email_response.json()
     email = email_response_body["elements"][0]["handle~"]["emailAddress"]
@@ -77,16 +81,16 @@ def authorize():
     response.set_cookie('token', encoded_token)
     return response
 
+
 # Checks the validity of a token
 def verify_token(encoded_token):
-
     try:
         decoded_token = base64.urlsafe_b64decode(encoded_token)
         decoded_user_info = decoded_token[:-32]
         decoded_signature = decoded_token[-32:]
         computed_signature = hmac.new(bytes_secret_key, decoded_user_info, hashlib.sha256).digest()
 
-        token_valid =  hmac.compare_digest(computed_signature, decoded_signature)
+        token_valid = hmac.compare_digest(computed_signature, decoded_signature)
 
         if token_valid:
             user_info_str = decoded_user_info.decode('utf-8')
@@ -97,14 +101,35 @@ def verify_token(encoded_token):
     except:
         return False
 
+
 # Get the token from the request (if present) and validates it
 def get_userinfo_or_false():
-
     encoded_token = request.cookies.get('token')
-    if not encoded_token: return False
+    if not encoded_token:
+        return False
 
     user_info = verify_token(encoded_token)
     return user_info
+
+
+def get_gpt_text(user_information: str):
+    openai.api_key = app.config['OPENAI_API_KEY']
+
+    gpt_query = "Write an email (without subject) to this person that makes them click a link. Clearly mark the location of the link with [INSERT LINK HERE]. My name is Bob. This is their description from Linkedin:\n"
+    gpt_query += user_information + ".\n\nThank you!"
+
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=gpt_query,
+        temperature=0.7,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+
+    return response.choices[0].text
+
 
 if __name__ == '__main__':
     app.run("localhost", port=8080)
