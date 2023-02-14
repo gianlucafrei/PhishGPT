@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p>Send a profile</p>
+<form id="form">
+    <label for="input-text">Enter LinkedIn Url:</label>
+    <input type="text" id="inputForm" name="input-text">
+    <button type="submit" id="submit-button">Phish</button>
+</form>
+
+<div id="result-container"></div>
+
+
+<script>
+    const form = document.querySelector('#form');
+    const submitButton = document.querySelector('#submit-button');
+    const resultContainer = document.querySelector("#result-container");
+    
+    form.addEventListener('submit', function(event) {
+      event.preventDefault(); // prevent default form submission
+  
+        const data = new FormData(form);
+
+        fetch('/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(Object.fromEntries(data))
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Form submitted successfully!');
+                console.log(data); // This will log the response data as a JavaScript object
+                // You can do something with the data object here
+                const newElement = document.createElement("pre");
+                newElement.innerText = JSON.stringify(data);
+                resultContainer.appendChild(newElement);
+            })
+            .catch(error => {
+            // handle any network errors
+            alert('Error: ' + error);
+        });
+
+
+    });
+  </script>
+
+{% endblock %}

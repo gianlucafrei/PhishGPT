@@ -1,0 +1,178 @@
+{
+    "public_identifier": "williamhgates",
+    "profile_pic_url": "https://media-exp1.licdn.com/dms/image/C4D03AQHqRRhVsnaziA/profile-displayphoto-shrink_200_200/0/1626063510328?e=1640217600&v=beta&t=6sSKthJwkNGWUV2-V-8BQzirJFe7wBUCEuq7ZiE447A",
+    "background_cover_image_url": "https://media-exp1.licdn.com/dms/image/C4D16AQHCmaRo1aaK2w/profile-displaybackgroundimage-shrink_200_800/0/1626063499170?e=1640217600&v=beta&t=TAwSSpIkYPG2ybh1caSxUYOHG92j5xPoxSyoWhvEsEQ",
+    "first_name": "Bill",
+    "last_name": "Gates",
+    "full_name": "Bill Gates",
+    "occupation": "Co-chair at Bill & Melinda Gates Foundation",
+    "headline": "Co-chair, Bill & Melinda Gates Foundation",
+    "summary": "Co-chair of the Bill & Melinda Gates Foundation. Founder of Breakthrough Energy. Co-founder of Microsoft. Voracious reader. Avid traveler. Active blogger.",
+    "country": "US",
+    "country_full_name": "United States of America",
+    "city": "Seattle",
+    "state": "Washington",
+    "experiences": [
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 2000
+            },
+            "ends_at": null,
+            "company": "Bill & Melinda Gates Foundation",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/bill-&-melinda-gates-foundation",
+            "title": "Co-chair",
+            "description": null,
+            "location": null,
+            "logo_url": "https://media-exp1.licdn.com/dms/image/C4E0BAQE7Na_mKQhIJg/company-logo_100_100/0/1633731810932?e=1642636800&v=beta&t=hItj5lRZS_QmopnwbW-g_ihhjEHgQCgYA7KLrz-cRNw"
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 2015
+            },
+            "ends_at": null,
+            "company": "Breakthrough Energy",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/breakthrough-energy",
+            "title": "Founder",
+            "description": null,
+            "location": null,
+            "logo_url": "https://media-exp1.licdn.com/dms/image/C4D0BAQGwD9vNu044FA/company-logo_100_100/0/1601560874941?e=1642636800&v=beta&t=WjzyQOPWUjX6ZCjKo6BUNErMtBWcLVpE4rvTSYc7fBI"
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 1975
+            },
+            "ends_at": null,
+            "company": "Microsoft",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/microsoft",
+            "title": "Co-founder",
+            "description": null,
+            "location": null,
+            "logo_url": "https://media-exp1.licdn.com/dms/image/C560BAQE88xCsONDULQ/company-logo_100_100/0/1618231291419?e=1642636800&v=beta&t=MAq_qy-nRaL6rKgjUK2guITFDoNZKUA68gibX9vF2S8"
+        }
+    ],
+    "education": [
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 1973
+            },
+            "ends_at": {
+                "day": 31,
+                "month": 12,
+                "year": 1975
+            },
+            "field_of_study": null,
+            "degree_name": null,
+            "school": "Harvard University",
+            "description": null,
+            "logo_url": "https://media-exp1.licdn.com/dms/image/C4E0BAQF5t62bcL0e9g/company-logo_100_100/0/1519855919126?e=1642636800&v=beta&t=Y6xmp31gvJUu_n6fuinB56w9xduD6RlmUj7vXVCZeQ4"
+        },
+        {
+            "starts_at": null,
+            "ends_at": null,
+            "field_of_study": null,
+            "degree_name": null,
+            "school": "Lakeside School",
+            "description": null,
+            "logo_url": "https://media-exp1.licdn.com/dms/image/C4D0BAQENlfOPKBEk3Q/company-logo_100_100/0/1519856497259?e=1642636800&v=beta&t=r9w6E_bExlNGB7feracny_Lm8qeOFN_blwnYDilef6g"
+        }
+    ],
+    "languages": [],
+    "accomplishment_organisations": [],
+    "accomplishment_publications": [],
+    "accomplishment_honors_awards": [],
+    "accomplishment_patents": [],
+    "accomplishment_courses": [],
+    "accomplishment_projects": [],
+    "accomplishment_test_scores": [],
+    "volunteer_work": [],
+    "certifications": [],
+    "connections": 8,
+    "people_also_viewed": [],
+    "recommendations": [],
+    "activities": [
+        {
+            "title": "Reaching net zero will take bold action and creativity to accelerate the development of climate-smart technologies. The first cohort of Breakthrough…",
+            "link": "https://www.linkedin.com/signup/cold-join",
+            "activity_status": "Shared by Bill Gates"
+        },
+        {
+            "title": "There are many reasons why students don’t go to college or pursue a postsecondary degree. College Advising Corps is providing guidance and support to…",
+            "link": "https://www.linkedin.com/signup/cold-join",
+            "activity_status": "Shared by Bill Gates"
+        },
+        {
+            "title": "Microsoft supports strong climate and clean energy provisions in US budget reconciliation and infrastructure bills and encourages Congress to take…",
+            "link": "https://www.linkedin.com/signup/cold-join",
+            "activity_status": "Liked by Bill Gates"
+        }
+    ],
+    "similarly_named_profiles": [
+        {
+            "name": "Bill Gates",
+            "link": "https://www.linkedin.com/in/bill-gates-610",
+            "summary": "Currently looking for Opportunity and Advancements.",
+            "location": "Whitehall, PA"
+        },
+        {
+            "name": "Bill Gates",
+            "link": "https://www.linkedin.com/in/bill-gates-50939b1a1",
+            "summary": "Janitor at Bill Gates Associates",
+            "location": "Tompkins County, NY"
+        },
+        {
+            "name": "Bill Gates",
+            "link": "https://www.linkedin.com/in/bill-gates-b3320919",
+            "summary": "GATES Solid Gold Investments ,Inc  LLC",
+            "location": "Santa Rosa, CA"
+        },
+        {
+            "name": "Bill Gates",
+            "link": "https://www.linkedin.com/in/bill-gates-b1a606b0",
+            "summary": "Maricopa County/PING Golf",
+            "location": "Phoenix, AZ"
+        }
+    ],
+    "articles": [
+        {
+            "title": "How to use vaccines more fairly and effectively",
+            "link": "https://www.linkedin.com/pulse/how-use-vaccines-more-fairly-effectively-bill-gates",
+            "published_date": {
+                "day": 13,
+                "month": 1,
+                "year": 2021
+            },
+            "author": "By Bill Gates",
+            "image_url": "https://media-exp1.licdn.com/dms/image/C4D12AQE3UotyMzc87Q/article-cover_image-shrink_180_320/0/1634143523512?e=1640217600&v=beta&t=EFDRPoc3O9vDIfnwGkD4EaaoCXJpatIO0kxjGMxuzGA"
+        },
+        {
+            "title": "Innovation and Inequity | 2021 Goalkeepers Report",
+            "link": "https://www.linkedin.com/pulse/innovation-inequity-2021-goalkeepers-report-bill-gates",
+            "published_date": {
+                "day": 14,
+                "month": 1,
+                "year": 2021
+            },
+            "author": "By Bill Gates",
+            "image_url": "https://media-exp1.licdn.com/dms/image/C4D12AQF4STKts6wKuw/article-cover_image-shrink_180_320/0/1631638325036?e=1640217600&v=beta&t=e8HIAtzYVSi6Bas0BjlSK0NQ7oXSmPTZIicTAkDGBLk"
+        },
+        {
+            "title": "How to fight malaria during a pandemic",
+            "link": "https://www.linkedin.com/pulse/how-fight-malaria-during-pandemic-bill-gates",
+            "published_date": {
+                "day": 25,
+                "month": 1,
+                "year": 2021
+            },
+            "author": "By Bill Gates",
+            "image_url": "https://media-exp1.licdn.com/dms/image/C4D12AQHIypYcSh9X5A/article-cover_image-shrink_180_320/0/1629916418149?e=1640217600&v=beta&t=fYySRiVx78oYH0T2gxrqOj11ujNX4ye0VRJx0jMhhQo"
+        }
+    ]
+}

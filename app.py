@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, render_template, abort, jsonify
 from authlib.integrations.requests_client import OAuth2Session
 
 import urllib.parse
@@ -11,28 +11,32 @@ import binascii
 import json
 import os
 
+import proxycurl_helper
+
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
-#app.config.from_pyfile('config.py')
+app.config.from_pyfile('config.py')
+
+# TODO Overwrite app settings with values from env variables
+
 
 # Generate a new random secret key for the cookie when starting up
-app.config['SECRET_KEY'] = uuid.uuid4().hex
+if 'SECRET_KEY' not in app.config:
+    app.config['SECRET_KEY'] = uuid.uuid4().hex
 bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 
 # Setup OIDC client
-# redirect_uri = app.config['REDIRECT_URI']
-redirect_uri = os.environ['REDIRECT_URI']
-#client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
-client = OAuth2Session(os.environ['LINKEDIN_CLIENT_ID'], os.environ['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
+redirect_uri = app.config['REDIRECT_URI']
+client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
 @app.route('/')
 def index():
     user_info = get_userinfo_or_false()
 
     if user_info:
-        return 'Welcome ' + user_info["email"]
+        return render_template('home.html', data=user_info)
     else:
-        return 'Not logged in: Click here to <a href="/login">login</a>'
+        return render_template('login.html')
 
 
 # Redirect to this endpoint to start the sign in with LinkedIn process
@@ -41,6 +45,23 @@ def login():
     uri, state = client.create_authorization_url("https://www.linkedin.com/oauth/v2/authorization", redirect_uri=redirect_uri, scope="r_emailaddress r_liteprofile")
     return redirect(uri)
 
+
+@app.route('/send', methods=['POST'])
+def sendEmail():
+
+    user_info = get_userinfo_or_false()
+    if not user_info:
+        abort(401)
+
+    data = request.get_json()
+    linked_in_url = data["input-text"]
+
+    # add linked in url if only username is passed
+    if not linked_in_url.startswith("https://www.linkedin.com/in/"): linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
+
+    # Load target profile data
+    user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
+    return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data})
 
 # This endpoint is called when the user is redirected back from linked in
 @app.route('/oidc_callback')
@@ -81,7 +102,6 @@ def authorize():
     response.set_cookie('token', encoded_token)
     return response
 
-
 # Checks the validity of a token
 def verify_token(encoded_token):
     try:
@@ -110,6 +130,7 @@ def get_userinfo_or_false():
 
     user_info = verify_token(encoded_token)
     return user_info
+
 
 
 if __name__ == '__main__':
