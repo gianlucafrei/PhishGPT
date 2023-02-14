@@ -9,16 +9,18 @@ import base64
 import hashlib
 import binascii
 import json
+import os
 
 import proxycurl_helper
-from instance.config import OPENAI_API_KEY
 from openai_helper import generate_phishing_email
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py')
 
-# TODO Overwrite app settings with values from env variables
+app.config.from_pyfile("../config.py")
+app.config.from_pyfile('config.py')
+for env in os.environ:
+    app.config[env] = os.environ[env]
 
 
 # Generate a new random secret key for the cookie when starting up
@@ -29,7 +31,6 @@ bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 # Setup OIDC client
 redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
-
 
 @app.route('/')
 def index():
@@ -64,7 +65,7 @@ def send_email():
     user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
 
     # Generate the phishing message
-    gpt_text = generate_phishing_email(user_data, OPENAI_API_KEY)
+    gpt_text = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
     return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data, 'mail_text': gpt_text})
 
