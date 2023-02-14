@@ -36,6 +36,7 @@ bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
+
 @app.route('/')
 def index():
     user_info = __get_userinfo_or_false()
@@ -63,7 +64,10 @@ def send_email():
     linked_in_url = data["input-text"]
 
     # add linked in url if only username is passed
-    if not linked_in_url.startswith("https://www.linkedin.com/in/"): linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
+    if not linked_in_url.startswith("https://www.linkedin.com/in/"):
+        linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
+    elif linked_in_url.endswith("/"):
+        linked_in_url = linked_in_url[:-1]
 
     # Load target profile data
     user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
