@@ -9,7 +9,6 @@ import base64
 import hashlib
 import binascii
 import json
-import openai
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
@@ -29,7 +28,6 @@ def index():
     user_info = get_userinfo_or_false()
 
     if user_info:
-        print(get_gpt_text("Davide Vanoni\nAdvanced Software Engineer at Zühlke Singapore"))
         return 'Welcome ' + user_info["email"]
     else:
         return 'Not logged in: Click here to <a href="/login">login</a>'
@@ -110,25 +108,6 @@ def get_userinfo_or_false():
 
     user_info = verify_token(encoded_token)
     return user_info
-
-
-def get_gpt_text(user_information: str):
-    openai.api_key = app.config['OPENAI_API_KEY']
-
-    gpt_query = "Write an email (without subject) to this person that makes them click a link. Clearly mark the location of the link with [INSERT LINK HERE]. My name is Bob. This is their description from Linkedin:\n"
-    gpt_query += user_information + ".\n\nThank you!"
-
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=gpt_query,
-        temperature=0.7,
-        max_tokens=256,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-
-    return response.choices[0].text
 
 
 if __name__ == '__main__':
