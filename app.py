@@ -17,7 +17,6 @@ from openai_helper import generate_phishing_email
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
 
-app.config.from_pyfile("../config.py")
 app.config.from_pyfile('config.py')
 for env in os.environ:
     app.config[env] = os.environ[env]
