@@ -4,6 +4,7 @@ import os
 
 cache_folder_name = "./cache"
 
+
 def load_linkedin_data_with_cache(linkedin_url: str, api_key: str):
 
     if not os.path.exists(cache_folder_name):
@@ -30,7 +31,6 @@ def load_linkedin_data_with_cache(linkedin_url: str, api_key: str):
             result = json.loads(result_json)
         return result
     
-
 
 def load_linkedin_data(linkedin_url: str, api_key: str):
 

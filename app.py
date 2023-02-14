@@ -9,9 +9,10 @@ import base64
 import hashlib
 import binascii
 import json
-import os
 
 import proxycurl_helper
+from instance.config import OPENAI_API_KEY
+from openai_helper import generate_phishing_email
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
@@ -21,7 +22,7 @@ app.config.from_pyfile('config.py')
 
 
 # Generate a new random secret key for the cookie when starting up
-if 'SECRET_KEY' not in app.config:
+if 'SECRET_KEY' not in app.config or app.config['SECRET_KEY'] is None:
     app.config['SECRET_KEY'] = uuid.uuid4().hex
 bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 
@@ -29,9 +30,10 @@ bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
+
 @app.route('/')
 def index():
-    user_info = get_userinfo_or_false()
+    user_info = __get_userinfo_or_false()
 
     if user_info:
         return render_template('home.html', data=user_info)
@@ -47,9 +49,8 @@ def login():
 
 
 @app.route('/send', methods=['POST'])
-def sendEmail():
-
-    user_info = get_userinfo_or_false()
+def send_email():
+    user_info = __get_userinfo_or_false()
     if not user_info:
         abort(401)
 
@@ -61,7 +62,12 @@ def sendEmail():
 
     # Load target profile data
     user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
-    return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data})
+
+    # Generate the phishing message
+    gpt_text = generate_phishing_email(user_data, OPENAI_API_KEY)
+
+    return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data, 'mail_text': gpt_text})
+
 
 # This endpoint is called when the user is redirected back from linked in
 @app.route('/oidc_callback')
@@ -95,15 +101,16 @@ def authorize():
     signature = hmac.new(bytes_secret_key, user_info_bytes, hashlib.sha256).digest()
     token = user_info_bytes + signature
     encoded_token = base64.urlsafe_b64encode(token)
-    assert verify_token(encoded_token)
+    assert __verify_token(encoded_token)
 
     # Safe the token in a cookie and redirect back to main page
     response = redirect("/")
     response.set_cookie('token', encoded_token)
     return response
 
+
 # Checks the validity of a token
-def verify_token(encoded_token):
+def __verify_token(encoded_token):
     try:
         decoded_token = base64.urlsafe_b64decode(encoded_token)
         decoded_user_info = decoded_token[:-32]
@@ -123,12 +130,12 @@ def verify_token(encoded_token):
 
 
 # Get the token from the request (if present) and validates it
-def get_userinfo_or_false():
+def __get_userinfo_or_false():
     encoded_token = request.cookies.get('token')
     if not encoded_token:
         return False
 
-    user_info = verify_token(encoded_token)
+    user_info = __verify_token(encoded_token)
     return user_info
 
 

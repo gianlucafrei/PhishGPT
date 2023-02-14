@@ -34,7 +34,7 @@
                 console.log(data); // This will log the response data as a JavaScript object
                 // You can do something with the data object here
                 const newElement = document.createElement("pre");
-                newElement.innerText = JSON.stringify(data);
+                newElement.innerText = data['mail_text'];
                 resultContainer.appendChild(newElement);
             })
             .catch(error => {
