@@ -9,19 +9,21 @@ import base64
 import hashlib
 import binascii
 import json
+import os
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py')
+#app.config.from_pyfile('config.py')
 
 # Generate a new random secret key for the cookie when starting up
 app.config['SECRET_KEY'] = uuid.uuid4().hex
 bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 
 # Setup OIDC client
-redirect_uri = app.config['REDIRECT_URI']
-client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
-
+# redirect_uri = app.config['REDIRECT_URI']
+redirect_uri = os.environ['REDIRECT_URI']
+#client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
+client = OAuth2Session(os.environ['LINKEDIN_CLIENT_ID'], os.environ['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
 @app.route('/')
 def index():
