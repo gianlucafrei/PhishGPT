@@ -75,17 +75,18 @@
             .then(response => response.json())
             .then(data => {
                 hideLoading();
-                console.log('Form submitted successfully!');
-                console.log(data); // This will log the response data as a JavaScript object
-                // You can do something with the data object here
                 const newElement = document.createElement("div");
                 newElement.innerText = data['user_response'];
+
+                if (data['success'] === false) {
+                  newElement.classList.add("error")
+                }
+
                 resultContainer.appendChild(newElement);
             })
             .catch(error => {
-            // handle any network errors
-            alert('Error: ' + error);
-        });
+                alert('Error: ' + error);
+            });
 
 
     });

@@ -80,7 +80,7 @@ def send_email():
 
         db.add_phish(user_info, user_data, gpt_request, gpt_response)
 
-        user_response = gpt_response
+        return jsonify({'success': True, 'user_response': gpt_response})
     except NubelaAuthException as e:
         user_response = f"Unexpected problem with the API: Error {e.status_code}"
         db.add_error(user_info, "NubelaAuthException", user_response)
@@ -90,7 +90,7 @@ def send_email():
                         " it."
         db.add_error(user_info, "ProfileNotFoundException", user_response)
 
-    return jsonify({'user_response': user_response})
+    return jsonify({'success': False, 'user_response': user_response})
 
 
 # This endpoint is called when the user is redirected back from linked in
