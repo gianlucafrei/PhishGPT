@@ -43,12 +43,8 @@
     }
 
     function isValidUrl(url) {
-        try {
-            new URL(url);
-            return true;
-        } catch (error) {
-            return false;
-        }
+        const regex = new RegExp("^http(s)?:\\/\\/([\\w]+\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$")
+        return regex.test(url)
     }
 
     formField.addEventListener('input', function() {
