@@ -22,7 +22,7 @@ def __try_to_generate_gpt_text(gpt_query):
 def generate_phishing_email(profile: dict, openapi_key: str) -> tuple:
     openai.api_key = openapi_key
 
-    user_information = profile["full_name"] + "\n" + (profile["summary"] or profile["occupation"]) + "\n\n"
+    user_information = profile["full_name"] + "\n" + (profile["summary"] or profile["occupation"] or profile["headline"] or "") + "\n\n"
 
     experiences = profile["experiences"]
     user_information += "Work experiences:\n"
