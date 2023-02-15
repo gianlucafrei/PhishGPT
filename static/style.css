@@ -13,10 +13,15 @@ body {
 header {
     font-size: 3em;
     font-weight: lighter;
+    margin-top: 1em;
 }
 
 header .highlight{
     font-weight: bold;
+}
+
+.landing-page-header{
+    margin-top: 20%;
 }
 
 nav{
