@@ -28,7 +28,6 @@
     const formField = document.querySelector('#input-text');
 
     function displayLoading() {
-        console.log("Display loading called");
         submitButton.disabled=true;
         submitButton.innerHTML="<i class='fa fa-spinner fa-spin'></i> This will take up to 30 seconds";
         setTimeout(() => {
@@ -44,7 +43,6 @@
     }
 
     formField.addEventListener('input', function() {
-        console.log("In event listener for input field");
         if (formField.value.trim() === '') {
             submitButton.disabled = true;
         } else {
