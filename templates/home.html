@@ -2,8 +2,8 @@
 
 {% block content %}
 
-<header>Select Victim</header>
-<p>Enter the LinkedIn username or profile url of the person you want to target. PhishGpt will load the publicly available information to generate a targeted phishing email.</p>
+<header>Select Target</header>
+<p>Enter the LinkedIn username or profile url of the person you want to target. PhishGPT will load the publicly available information to generate a targeted phishing email.</p>
 
 
 <form class="form__group field" id="form">
@@ -16,21 +16,6 @@
 </div>
 
 <div id="result-container" class="results">
-    <div>
-Dear Bill Gates,
-
-My name is Samuel, and I can’t begin to express how much I admire and respect the work you’ve done. Your professional journey - from attending Lakeside School and Harvard University, to your founding Microsoft and Breakthrough Energy, to your charity work at the Bill & Melinda Gates Foundation — is absolutely inspiring.
-
-I’m currently working on a project related to global resource management, and I heard about your interest in these areas through your active blogging. I believe you could provide valuable insight into the matter, so I kindly ask for the opportunity to discuss it with you further. 
-
-I’ve created a short survey [INSERT LINK HERE] that might help you better understand the project and its goals. If you have the time and interest, I’m sure your contributions will be of great help to this project.
-
-Thank you for your time and I look forward to hearing from you.
-
-Sincerely, 
-
-Samuel
-    </div>
 </div>
 
 
@@ -57,7 +42,7 @@ Samuel
                 console.log('Form submitted successfully!');
                 console.log(data); // This will log the response data as a JavaScript object
                 // You can do something with the data object here
-                const newElement = document.createElement("pre");
+                const newElement = document.createElement("div");
                 newElement.innerText = data['mail_text'];
                 resultContainer.appendChild(newElement);
             })
