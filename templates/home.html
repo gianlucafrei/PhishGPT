@@ -79,7 +79,7 @@
                 console.log(data); // This will log the response data as a JavaScript object
                 // You can do something with the data object here
                 const newElement = document.createElement("div");
-                newElement.innerText = data['mail_text'];
+                newElement.innerText = data['user_response'];
                 resultContainer.appendChild(newElement);
             })
             .catch(error => {

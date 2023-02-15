@@ -2,6 +2,9 @@ import requests
 import json
 import os
 
+from exceptions.nubela_auth_exception import NubelaAuthException
+from exceptions.profile_not_found_exception import ProfileNotFoundException
+
 cache_folder_name = "./cache"
 
 
@@ -51,6 +54,10 @@ def load_linkedin_data(linkedin_url: str, api_key: str):
         json_data = json.loads(response.content)
         # Do something with the JSON data
         return json_data
+    elif response.status_code == 404:
+        raise ProfileNotFoundException
+    elif response.status_code in (401, 403):
+        raise NubelaAuthException(response.status_code)
     else:
         # Handle non-200 response status codes
         raise Exception(f"Request to Nebula failed with status code {response.status_code}")

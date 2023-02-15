@@ -13,6 +13,8 @@ import os
 
 import proxycurl_helper
 from db import DB
+from exceptions.nubela_auth_exception import NubelaAuthException
+from exceptions.profile_not_found_exception import ProfileNotFoundException
 from openai_helper import generate_phishing_email
 
 # Setup application
@@ -64,22 +66,31 @@ def send_email():
     data = request.get_json()
     linked_in_url = data["input-text"]
 
-    # add linked in url if only username is passed
     if not linked_in_url.startswith("https://www.linkedin.com/in/"):
         linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
     elif linked_in_url.endswith("/"):
         linked_in_url = linked_in_url[:-1]
 
-    # Load target profile data
-    user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
-
-    # Generate the phishing message
-    gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
-
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
-    db.add_session(user_info, user_data, gpt_request, gpt_response)
 
-    return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data, 'mail_text': gpt_response})
+    try:
+        user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
+
+        gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
+
+        db.add_phish(user_info, user_data, gpt_request, gpt_response)
+
+        user_response = gpt_response
+    except NubelaAuthException as e:
+        user_response = f"Unexpected problem with the API: Error {e.status_code}"
+        db.add_error(user_info, "NubelaAuthException", user_response)
+    except ProfileNotFoundException:
+        user_response = "Profile not found. This may occur when the profile does not exist or is private. If the" \
+                        " profile just went from private to public just wait a little bit to let the system recognise" \
+                        " it."
+        db.add_error(user_info, "ProfileNotFoundException", user_response)
+
+    return jsonify({'user_response': user_response})
 
 
 # This endpoint is called when the user is redirected back from linked in
