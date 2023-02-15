@@ -12,6 +12,7 @@ import json
 import os
 
 import proxycurl_helper
+from db import DB
 from openai_helper import generate_phishing_email
 
 # Setup application
@@ -73,9 +74,12 @@ def send_email():
     user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
 
     # Generate the phishing message
-    gpt_text = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
+    gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
-    return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data, 'mail_text': gpt_text})
+    db = DB(app.config['MONGO_HOST'], app.config['MONGO_PORT'], app.config['MONGO_DB'])
+    db.add_session(user_info, user_data, gpt_request, gpt_response)
+
+    return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data, 'mail_text': gpt_response})
 
 
 # This endpoint is called when the user is redirected back from linked in

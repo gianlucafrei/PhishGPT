@@ -19,7 +19,7 @@ def __try_to_generate_gpt_text(gpt_query):
     )
 
 
-def generate_phishing_email(profile: dict, openapi_key: str) -> str:
+def generate_phishing_email(profile: dict, openapi_key: str) -> tuple:
     openai.api_key = openapi_key
 
     user_information = profile["full_name"] + "\n" + (profile["summary"] or profile["occupation"]) + "\n\n"
@@ -40,4 +40,4 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> str:
     gpt_query += user_information + "\n\nThank you!"
 
     response = __try_to_generate_gpt_text(gpt_query)
-    return response.choices[0].text
+    return gpt_query, response.choices[0].text
