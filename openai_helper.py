@@ -6,17 +6,9 @@ from tenacity import *
 @retry(retry=retry_if_exception_type(RateLimitError),
        wait=wait_exponential(multiplier=1, min=1, max=30),
        stop=stop_after_attempt(10))
-def __try_to_generate_gpt_text(gpt_query):
+def __try_to_generate_gpt_text(openai_request):
     print("Trying to generate the phishing message...")
-    return openai.Completion.create(
-        model="text-davinci-003",
-        prompt=gpt_query,
-        temperature=1,
-        max_tokens=1024,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
+    return openai.Completion.create(**openai_request)
 
 
 def generate_phishing_email(profile: dict, openapi_key: str) -> tuple:
@@ -39,5 +31,15 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> tuple:
     gpt_query = "Write a well-formatted email, signed as Samuel and without the subject to the following person that makes them click a link. Mark the location of the link with [INSERT LINK HERE]. In the mail, take in consideration his Linkedin description:\n"
     gpt_query += user_information + "\n\nThank you!"
 
-    response = __try_to_generate_gpt_text(gpt_query)
-    return gpt_query, response.choices[0].text
+    openai_request = dict(
+        model="text-davinci-003",
+        prompt=gpt_query,
+        temperature=1,
+        max_tokens=1024,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+
+    response = __try_to_generate_gpt_text(openai_request)
+    return openai_request, response.choices[0].text

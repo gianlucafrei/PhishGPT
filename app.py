@@ -109,9 +109,6 @@ def authorize():
     profile_api_url = "https://api.linkedin.com/v2/me"
     response = requests.get(url=profile_api_url, headers=headers)
     profile = response.json()
-    firstname = profile["localizedFirstName"]
-    lastname = profile["localizedLastName"]
-    fullname = f"{firstname} {lastname}"
 
     # Load user email address
     email_api_url = "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))"
