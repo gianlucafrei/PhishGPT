@@ -1,9 +1,13 @@
 <!doctype html>
 <title>PhishGPT</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-  <h1>PhishGPT</h1>
-</nav>
 <section class="content">
+
+    <nav>
+        <img class="nav-logo" alt="ZühlkeLogo" src="https://www.zuehlke.com/sites/default/files/images/zuehlke_logo_rgb_highres_1.jpeg" />
+    </nav>
+
+    <div class="main-container">
     {% block content %}{% endblock %}
+    </div>
 </section>

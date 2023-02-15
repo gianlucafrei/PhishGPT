@@ -150,4 +150,4 @@ def __get_userinfo_or_false():
 
 
 if __name__ == '__main__':
-    app.run("localhost", port=8080)
+    app.run("localhost", port=8080, static_url_path='/static')

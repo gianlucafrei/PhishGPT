@@ -1,14 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p>Send a profile</p>
-<form id="form">
-    <label for="input-text">Enter LinkedIn Url:</label>
-    <input type="text" id="inputForm" name="input-text">
-    <button type="submit" id="submit-button">Phish</button>
+
+<header>Select Victim</header>
+<p>Enter the LinkedIn username or profile url of the person you want to target. PhishGpt will load the publicly available information to generate a targeted phishing email.</p>
+
+
+<form class="form__group field" id="form">
+    <input type="input" class="form__field" placeholder="https://www.linkedin.com/in/victim" name="input-text" id='input-text' required />
+    <label for="input-text" class="form__label">LinkedIn Url</label>
 </form>
 
-<div id="result-container"></div>
+<div class="mainBtnContainer">
+    <button type="submit" id="submit-button" class="mainBtn">Phish!</button>
+</div>
+
+<div id="result-container" class="results">
+    <div>
+Dear Bill Gates,
+
+My name is Samuel, and I can’t begin to express how much I admire and respect the work you’ve done. Your professional journey - from attending Lakeside School and Harvard University, to your founding Microsoft and Breakthrough Energy, to your charity work at the Bill & Melinda Gates Foundation — is absolutely inspiring.
+
+I’m currently working on a project related to global resource management, and I heard about your interest in these areas through your active blogging. I believe you could provide valuable insight into the matter, so I kindly ask for the opportunity to discuss it with you further. 
+
+I’ve created a short survey [INSERT LINK HERE] that might help you better understand the project and its goals. If you have the time and interest, I’m sure your contributions will be of great help to this project.
+
+Thank you for your time and I look forward to hearing from you.
+
+Sincerely, 
+
+Samuel
+    </div>
+</div>
 
 
 <script>
@@ -16,8 +39,9 @@
     const submitButton = document.querySelector('#submit-button');
     const resultContainer = document.querySelector("#result-container");
     
-    form.addEventListener('submit', function(event) {
-      event.preventDefault(); // prevent default form submission
+   submitButton.addEventListener('click', function(event) {
+        console.log("Let's start");
+        
   
         const data = new FormData(form);
 
