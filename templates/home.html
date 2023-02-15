@@ -42,8 +42,17 @@
         document.getElementById("submit-button").innerHTML="Phish!";
     }
 
+    function isValidUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
     formField.addEventListener('input', function() {
-        if (formField.value.trim() === '') {
+        if (!isValidUrl(formField.value.trim())) {
             submitButton.disabled = true;
         } else {
             submitButton.disabled = false;
