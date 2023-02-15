@@ -124,6 +124,7 @@ nav{
     transition: 0.2s;
     font-size: 1rem;
     color: #9b9b9b;
+    padding-bottom: 20px;
   }
   
   .form__field:focus {
