@@ -83,12 +83,12 @@ def send_email():
         return jsonify({'success': True, 'user_response': gpt_response})
     except NubelaAuthException as e:
         user_response = f"Unexpected problem with the API: Error {e.status_code}"
-        db.add_error(user_info, "NubelaAuthException", user_response)
+        db.add_error(user_info, linked_in_url, "NubelaAuthException", user_response)
     except ProfileNotFoundException:
         user_response = "Profile not found. This may occur when the profile does not exist or is private. If the" \
                         " profile just went from private to public just wait a little bit to let the system recognise" \
                         " it."
-        db.add_error(user_info, "ProfileNotFoundException", user_response)
+        db.add_error(user_info, linked_in_url, "ProfileNotFoundException", user_response)
 
     return jsonify({'success': False, 'user_response': user_response})
 
