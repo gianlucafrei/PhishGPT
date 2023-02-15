@@ -10,11 +10,11 @@ class DB:
             cls.__instance_dict[arg_key] = super().__new__(cls)
         return cls.__instance_dict[arg_key]
 
-    def __init__(self, host: str, port: int, db_name: str):
-        self.db = pymongo.MongoClient(f"mongodb://{host}:{port}")[db_name]
+    def __init__(self, connection: str, db_name: str, user: str, password: str):
+        self.db = pymongo.MongoClient(f"{connection}", username=user, password=password)[db_name]
 
     def add_session(self, requester: dict, linkedin_data: dict, openai_request: str, mail: str):
-        collection = "phish"
+        collection = "phishes"
         coll = self.db[collection]
 
         data = {
