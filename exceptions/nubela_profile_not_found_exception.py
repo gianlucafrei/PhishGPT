@@ -1,0 +1,2 @@
+class NubelaProfileNotFoundException(Exception):
+    pass

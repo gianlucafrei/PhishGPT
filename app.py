@@ -14,7 +14,7 @@ import os
 import proxycurl_helper
 from db import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
-from exceptions.profile_not_found_exception import ProfileNotFoundException
+from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
 from openai_helper import generate_phishing_email
 
 # Setup application
@@ -84,7 +84,7 @@ def send_email():
     except NubelaAuthException as e:
         user_response = f"Unexpected problem with the API: Error {e.status_code}"
         db.add_error(user_info, linked_in_url, "NubelaAuthException", user_response)
-    except ProfileNotFoundException:
+    except NubelaProfileNotFoundException:
         user_response = "Profile not found. This may occur when the profile does not exist or is private. If the" \
                         " profile just went from private to public just wait a little bit to let the system recognise" \
                         " it."
