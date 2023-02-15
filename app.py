@@ -76,7 +76,7 @@ def send_email():
     # Generate the phishing message
     gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
-    db = DB(app.config['MONGO_HOST'], app.config['MONGO_PORT'], app.config['MONGO_DB'])
+    db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
     db.add_session(user_info, user_data, gpt_request, gpt_response)
 
     return jsonify({'linked_in_url': linked_in_url, 'user_data': user_data, 'mail_text': gpt_response})
