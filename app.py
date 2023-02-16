@@ -64,18 +64,20 @@ def send_email():
         abort(401)
 
     data = request.get_json()
-    linked_in_url = data["input-text"]
+    linked_in_input = data["input-text"]
 
-    if not linked_in_url:
+    if not linked_in_input:
         return jsonify({
             'success': False,
             'user_response': "Empty input"
         })
 
-    if not linked_in_url.startswith("https://www.linkedin.com/in/"):
-        linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
-    elif linked_in_url.endswith("/"):
-        linked_in_url = linked_in_url[:-1]
+    if not linked_in_input.startswith("https://www.linkedin.com/in/"):
+        linked_in_url = "https://www.linkedin.com/in/" + linked_in_input
+    elif linked_in_input.endswith("/"):
+        linked_in_url = linked_in_input[:-1]
+    else:
+        linked_in_url = linked_in_input
 
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
 
@@ -92,7 +94,7 @@ def send_email():
             'profile_image': user_data['profile_pic_url']
         })
     except (NubelaAuthException, NubelaProfileNotFoundException) as e:
-        db.add_error(user_info, linked_in_url, type(e).__name__, e.message)
+        db.add_error(user_info, linked_in_input, type(e).__name__, e.message)
         return jsonify({
             'success': False,
             'user_response': e.message
