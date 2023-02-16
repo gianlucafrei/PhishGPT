@@ -17,7 +17,7 @@
     </button>
 </div>
 
-<div id="result-container" class="results">
+<div id="result-container">
 </div>
 
 
@@ -54,11 +54,11 @@
             submitButton.disabled = false;
         }
     });
-    
+
     submitButton.addEventListener('click', function(event) {
         console.log("Let's start");
         displayLoading();
-  
+
         const data = new FormData(form);
 
         fetch('/send', {
@@ -71,14 +71,26 @@
             .then(response => response.json())
             .then(data => {
                 hideLoading();
-                const newElement = document.createElement("div");
-                newElement.innerText = data['user_response'];
+                const firstElement = resultContainer.innerText === ""
 
-                if (data['success'] === false) {
-                  newElement.classList.add("error")
+                if (!firstElement) {
+                    const hr = document.createElement("hr")
+                    resultContainer.insertBefore(hr, resultContainer.children[0]);
                 }
 
-                resultContainer.appendChild(newElement);
+                const div = document.createElement("div");
+                div.innerText = data['user_response'];
+                if (data['success'] === false) {
+                  div.classList.add("error")
+                }
+                resultContainer.insertBefore(div, resultContainer.children[0]);
+
+                const profileImage = data['profile_image']
+                if (profileImage) {
+                    const img = document.createElement("img")
+                    img.setAttribute("src", profileImage)
+                    resultContainer.insertBefore(img, resultContainer.children[0]);
+                }
             })
             .catch(error => {
                 alert('Error: ' + error);
