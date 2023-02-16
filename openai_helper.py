@@ -11,7 +11,7 @@ def __try_to_generate_gpt_text(openai_request):
     return openai.Completion.create(**openai_request)
 
 
-def generate_phishing_email(profile: dict, openapi_key: str) -> tuple:
+def generate_phishing_email(profile: dict, openapi_key: str) -> tuple[dict, str]:
     openai.api_key = openapi_key
 
     user_information = profile["full_name"] + "\n"

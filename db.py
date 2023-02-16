@@ -13,7 +13,7 @@ class DB:
     def __init__(self, connection: str, db_name: str, user: str, password: str):
         self.db = MongoClient(f"{connection}", username=user, password=password)[db_name]
 
-    def add_phish(self, requester: dict, linkedin_data: dict, openai_request: str, mail: str):
+    def add_phish(self, requester: dict, linkedin_data: dict, openai_request: dict, mail: str):
         collection = "phishes"
         coll = self.db[collection]
 
