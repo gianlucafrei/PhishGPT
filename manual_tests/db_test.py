@@ -8,4 +8,4 @@ mydict = {
 }
 
 db = DB(MONGO_CONNECTION, MONGO_DB, MONGO_USER, MONGO_PASSWORD)
-db.add_phish(mydict, mydict, "abc", "def")
+db.add_phish(mydict, False, mydict, mydict, "def")
