@@ -42,7 +42,7 @@ def load_linkedin_data(linkedin_url: str, api_key: str):
     params = {
         'url': linkedin_url,
         'fallback_to_cache': 'on-error',
-        'use_cache': 'if-present'
+        'use_cache': 'if-recent'
     }
     response = requests.get(api_endpoint,
                             params=params,
