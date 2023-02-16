@@ -66,6 +66,12 @@ def send_email():
     data = request.get_json()
     linked_in_url = data["input-text"]
 
+    if not linked_in_url:
+        return jsonify({
+            'success': False,
+            'user_response': "Empty input"
+        })
+
     if not linked_in_url.startswith("https://www.linkedin.com/in/"):
         linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
     elif linked_in_url.endswith("/"):
@@ -85,17 +91,12 @@ def send_email():
             'user_response': gpt_response.strip(),
             'profile_image': user_data['profile_pic_url']
         })
-    except NubelaAuthException as e:
-        user_response = f"Unexpected problem with the API: Error {e.status_code}"
-        db.add_error(user_info, linked_in_url, "NubelaAuthException", user_response)
-    except NubelaProfileNotFoundException:
-        user_response = "Profile not found. This may occur when the profile does not exist or is private."
-        db.add_error(user_info, linked_in_url, "NubelaProfileNotFoundException", user_response)
-
-    return jsonify({
-        'success': False,
-        'user_response': user_response
-    })
+    except (NubelaAuthException, NubelaProfileNotFoundException) as e:
+        db.add_error(user_info, linked_in_url, type(e).__name__, e.message)
+        return jsonify({
+            'success': False,
+            'user_response': e.message
+        })
 
 
 # This endpoint is called when the user is redirected back from linked in

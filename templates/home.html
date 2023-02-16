@@ -8,7 +8,7 @@
 
 <form class="form__group field" id="form">
     <input type="input" class="form__field" placeholder="https://www.linkedin.com/in/victim" name="input-text" id='input-text' required />
-    <label for="input-text" class="form__label">LinkedIn Url</label>
+    <label for="input-text" class="form__label">LinkedIn Url or username</label>
 </form>
 
 <div class="mainBtnContainer">
@@ -42,17 +42,8 @@
         document.getElementById("submit-button").innerHTML="Phish!";
     }
 
-    function isValidUrl(url) {
-        const regex = new RegExp("^http(s)?:\\/\\/([\\w]+\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$")
-        return regex.test(url)
-    }
-
     formField.addEventListener('input', function() {
-        if (!isValidUrl(formField.value.trim())) {
-            submitButton.disabled = true;
-        } else {
-            submitButton.disabled = false;
-        }
+        submitButton.disabled = formField.value.trim() === ""
     });
 
     submitButton.addEventListener('click', function(event) {
