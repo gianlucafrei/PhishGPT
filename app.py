@@ -64,31 +64,52 @@ def send_email():
         abort(401)
 
     data = request.get_json()
-    linked_in_url = data["input-text"]
+    linked_in_input = data["input-text"]
 
-    if not linked_in_url.startswith("https://www.linkedin.com/in/"):
-        linked_in_url = "https://www.linkedin.com/in/" + linked_in_url
-    elif linked_in_url.endswith("/"):
-        linked_in_url = linked_in_url[:-1]
+    if not linked_in_input:
+        return jsonify({
+            'success': False,
+            'user_response': "Empty input"
+        })
+
+    if not linked_in_input.startswith("https://www.linkedin.com/in/"):
+        linked_in_url = "https://www.linkedin.com/in/" + linked_in_input
+    elif linked_in_input.endswith("/"):
+        linked_in_url = linked_in_input[:-1]
+    else:
+        linked_in_url = linked_in_input
+
+    username = linked_in_url[linked_in_url.rfind("/") + 1:]
 
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
 
+    from_api = False
+    if username == 'example':
+        with open("mocks/proxycurl/example.json", "r") as file:
+            user_data = json.loads(file.read())
+    else:
+        user_data = db.get_linked_in_data_by_username(username)
+
     try:
-        user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
+        if not user_data:
+            from_api = True
+            user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
 
         gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
-        db.add_phish(user_info, user_data, gpt_request, gpt_response)
+        db.add_phish(user_info, from_api, user_data, gpt_request, gpt_response)
 
-        return jsonify({'success': True, 'user_response': gpt_response})
-    except NubelaAuthException as e:
-        user_response = f"Unexpected problem with the API: Error {e.status_code}"
-        db.add_error(user_info, linked_in_url, "NubelaAuthException", user_response)
-    except NubelaProfileNotFoundException:
-        user_response = "Profile not found. This may occur when the profile does not exist or is private."
-        db.add_error(user_info, linked_in_url, "NubelaProfileNotFoundException", user_response)
-
-    return jsonify({'success': False, 'user_response': user_response})
+        return jsonify({
+            'success': True,
+            'user_response': gpt_response.strip(),
+            'profile_image': user_data['profile_pic_url']
+        })
+    except (NubelaAuthException, NubelaProfileNotFoundException) as e:
+        db.add_error(user_info, linked_in_input, type(e).__name__, e.message)
+        return jsonify({
+            'success': False,
+            'user_response': e.message
+        })
 
 
 # This endpoint is called when the user is redirected back from linked in

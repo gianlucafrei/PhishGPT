@@ -6,8 +6,9 @@ body {
     font-weight: lighter;
 }
 
-.light{
+.light {
     font-weight: lighter;
+    text-align: justify;
 }
 
 header {
@@ -89,14 +90,25 @@ nav{
     background-color: rgb(235, 235, 235);
 }
 
-.results div {
+#result-container div {
     font-family: monospace;
     white-space: pre-wrap;
-    margin: 1em 0;
     overflow-wrap: normal;
+    text-align: justify;
 }
 
-.results .error {
+#result-container hr {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+#result-container img {
+    width: 100px;
+    border-radius: 50px;
+    margin-bottom: 1em;
+}
+
+#result-container .error {
   color: red
 }
 

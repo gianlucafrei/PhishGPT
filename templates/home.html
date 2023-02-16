@@ -3,12 +3,12 @@
 {% block content %}
 
 <header>Select Target</header>
-<p>Enter the LinkedIn username or profile url of the person you want to target. PhishGPT will load the publicly available information to generate a targeted phishing email.</p>
+<p class="light">Enter the LinkedIn username or profile url of the person you want to target. PhishGPT will load the publicly available information to generate a targeted phishing email.</p>
 
 
 <form class="form__group field" id="form">
-    <input type="input" class="form__field" placeholder="https://www.linkedin.com/in/victim" name="input-text" id='input-text' required />
-    <label for="input-text" class="form__label">LinkedIn Url</label>
+    <input type="text" class="form__field" placeholder="https://www.linkedin.com/in/victim" name="input-text" id='input-text'/>
+    <label for="input-text" class="form__label">LinkedIn Url or username</label>
 </form>
 
 <div class="mainBtnContainer">
@@ -17,7 +17,7 @@
     </button>
 </div>
 
-<div id="result-container" class="results">
+<div id="result-container">
 </div>
 
 
@@ -29,12 +29,7 @@
 
     function displayLoading() {
         submitButton.disabled=true;
-        submitButton.innerHTML="<i class='fa fa-spinner fa-spin'></i> This will take up to 30 seconds";
-        setTimeout(() => {
-            submitButton.disabled=false;
-            submitButton.innerHTML="Phish!";
-        }, 40000);
-
+        submitButton.innerHTML="<i class='fa fa-spinner fa-spin'></i> This can take up to 30 seconds";
     }
 
     function hideLoading() {
@@ -42,23 +37,14 @@
         document.getElementById("submit-button").innerHTML="Phish!";
     }
 
-    function isValidUrl(url) {
-        const regex = new RegExp("^http(s)?:\\/\\/([\\w]+\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$")
-        return regex.test(url)
-    }
-
     formField.addEventListener('input', function() {
-        if (!isValidUrl(formField.value.trim())) {
-            submitButton.disabled = true;
-        } else {
-            submitButton.disabled = false;
-        }
+        submitButton.disabled = formField.value.trim() === ""
     });
-    
+
     submitButton.addEventListener('click', function(event) {
         console.log("Let's start");
         displayLoading();
-  
+
         const data = new FormData(form);
 
         fetch('/send', {
@@ -71,16 +57,29 @@
             .then(response => response.json())
             .then(data => {
                 hideLoading();
-                const newElement = document.createElement("div");
-                newElement.innerText = data['user_response'];
+                const firstElement = resultContainer.innerText === ""
 
-                if (data['success'] === false) {
-                  newElement.classList.add("error")
+                if (!firstElement) {
+                    const hr = document.createElement("hr")
+                    resultContainer.insertBefore(hr, resultContainer.children[0]);
                 }
 
-                resultContainer.appendChild(newElement);
+                const div = document.createElement("div");
+                div.innerText = data['user_response'];
+                if (data['success'] === false) {
+                  div.classList.add("error")
+                }
+                resultContainer.insertBefore(div, resultContainer.children[0]);
+
+                const profileImage = data['profile_image']
+                if (profileImage) {
+                    const img = document.createElement("img")
+                    img.setAttribute("src", profileImage)
+                    resultContainer.insertBefore(img, resultContainer.children[0]);
+                }
             })
             .catch(error => {
+                hideLoading();
                 alert('Error: ' + error);
             });
 
