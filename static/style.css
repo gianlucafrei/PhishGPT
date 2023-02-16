@@ -6,8 +6,9 @@ body {
     font-weight: lighter;
 }
 
-.light{
+.light {
     font-weight: lighter;
+    text-align: justify;
 }
 
 header {
