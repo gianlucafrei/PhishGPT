@@ -112,6 +112,7 @@ nav{
     padding: 7px 0;
     background: transparent;
     transition: border-color 0.2s;
+    margin-top: 10px;
   }
   .form__field::placeholder {
     color: transparent;
@@ -129,7 +130,7 @@ nav{
     transition: 0.2s;
     font-size: 1rem;
     color: #9b9b9b;
-    padding-bottom: 20px;
+    margin-bottom: 20px;
   }
   
   .form__field:focus {
@@ -153,4 +154,5 @@ nav{
   .form__field:required, .form__field:invalid {
     box-shadow: none;
   }
+
 
