@@ -14,19 +14,25 @@ def __try_to_generate_gpt_text(openai_request):
 def generate_phishing_email(profile: dict, openapi_key: str) -> tuple:
     openai.api_key = openapi_key
 
-    user_information = profile["full_name"] + "\n" + (profile["summary"] or profile["occupation"] or profile["headline"] or "") + "\n\n"
+    user_information = profile["full_name"] + "\n"
+
+    user_information += (profile["summary"] or "") + "\n"
+    user_information += (profile["occupation"] or "") + "\n"
+    user_information += (profile["headline"] or "") + "\n"
 
     experiences = profile["experiences"]
-    user_information += "Work experiences:\n"
-    for experience in experiences:
-        user_information += experience["title"] + " at " + experience["company"] + "\n"
+    if experiences:
+        user_information += "Work experiences:\n"
+        for experience in experiences:
+            user_information += experience["title"] + " at " + experience["company"] + "\n"
 
     user_information += "\n"
 
     educations = profile["education"]
-    user_information += "Attended schools:\n"
-    for education in educations:
-        user_information += education["school"] + "\n"
+    if educations:
+        user_information += "Attended schools:\n"
+        for education in educations:
+            user_information += education["school"] + "\n"
 
     gpt_query = "Write a well-formatted email, signed as Samuel and without the subject to the following person that makes them click a link. Mark the location of the link with [INSERT LINK HERE]. In the mail, take in consideration his Linkedin description:\n"
     gpt_query += user_information + "\n\nThank you!"
