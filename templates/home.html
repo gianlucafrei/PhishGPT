@@ -7,7 +7,7 @@
 
 
 <form class="form__group field" id="form">
-    <input type="input" class="form__field" placeholder="https://www.linkedin.com/in/victim" name="input-text" id='input-text' required />
+    <input type="text" class="form__field" placeholder="https://www.linkedin.com/in/victim" name="input-text" id='input-text'/>
     <label for="input-text" class="form__label">LinkedIn Url or username</label>
 </form>
 
@@ -29,12 +29,7 @@
 
     function displayLoading() {
         submitButton.disabled=true;
-        submitButton.innerHTML="<i class='fa fa-spinner fa-spin'></i> This will take up to 30 seconds";
-        setTimeout(() => {
-            submitButton.disabled=false;
-            submitButton.innerHTML="Phish!";
-        }, 40000);
-
+        submitButton.innerHTML="<i class='fa fa-spinner fa-spin'></i> This can take up to 30 seconds";
     }
 
     function hideLoading() {
