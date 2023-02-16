@@ -82,11 +82,11 @@ def send_email():
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
 
     try:
-        user_data = proxycurl_helper.load_linkedin_data_with_cache(linked_in_url, app.config["NEBULA_API_KEY"])
+        from_api, user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
 
         gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
-        db.add_phish(user_info, user_data, gpt_request, gpt_response)
+        db.add_phish(user_info, from_api, user_data, gpt_request, gpt_response)
 
         return jsonify({
             'success': True,
