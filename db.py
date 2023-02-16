@@ -1,4 +1,6 @@
 from pymongo import MongoClient
+from bson.objectid import ObjectId
+import datetime
 
 
 class DB:
@@ -39,3 +41,25 @@ class DB:
         }
 
         coll.insert_one(data)
+
+    def get_linked_in_data_by_username(self, username: str) -> dict or None:
+        print(f"Loading '{username}' from DB")
+
+        collection = "phishes"
+        coll = self.db[collection]
+
+        last_week_oid = ObjectId.from_datetime(datetime.datetime.utcnow() - datetime.timedelta(days=7))
+        query = {
+            "$and": [
+                {"linkedin_data.public_identifier": username},
+                {"from_api": True},
+                {"_id": {"$gte": last_week_oid}}
+            ]
+        }
+
+        select_field = 'linkedin_data'
+        document = coll.find_one(query, {select_field: 1})
+        if not document:
+            print(f"'{username}' not found in DB")
+            return None
+        return document[select_field]

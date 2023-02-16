@@ -79,10 +79,21 @@ def send_email():
     else:
         linked_in_url = linked_in_input
 
+    username = linked_in_url[linked_in_url.rfind("/") + 1:]
+
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
 
+    from_api = False
+    if username == 'example':
+        with open("mocks/proxycurl/example.json", "r") as file:
+            user_data = json.loads(file.read())
+    else:
+        user_data = db.get_linked_in_data_by_username(username)
+
     try:
-        from_api, user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
+        if not user_data:
+            from_api = True
+            user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
 
         gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
