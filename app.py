@@ -11,6 +11,7 @@ import hashlib
 import binascii
 import json
 import os
+import imghdr
 
 import proxycurl_helper
 from db import DB
@@ -64,7 +65,9 @@ def login():
 def get_profile_image(username):
     image = profile_images.get(username)
     if image:
-        return send_file(BytesIO(image), mimetype='image/jpeg')
+        image_data = BytesIO(image)
+        mimetype = "" if imghdr.what(image_data) else "image/svg+xml"
+        return send_file(image_data, mimetype=mimetype)
     else:
         return 'User has not been loaded yet. Cannot fetch the profile image', 404
 
