@@ -15,7 +15,7 @@ class DB:
     def __init__(self, connection: str, db_name: str, user: str, password: str):
         self.db = MongoClient(f"{connection}", username=user, password=password)[db_name]
 
-    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, openai_request: dict, mail: str):
+    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, mail: str):
         collection = "phishes"
         coll = self.db[collection]
 
@@ -23,6 +23,7 @@ class DB:
             "requester": requester,
             "from_api": from_api,
             "linkedin_data": linkedin_data,
+            "profile_image": profile_image,
             "openai_request": openai_request,
             "mail": mail
         }
@@ -57,9 +58,8 @@ class DB:
             ]
         }
 
-        select_field = 'linkedin_data'
-        document = coll.find_one(query, {select_field: 1})
+        document = coll.find_one(query)
         if not document:
             print(f"'{username}' not found in DB")
-            return None
-        return document[select_field]
+            return None, None
+        return document['profile_image'], document['linkedin_data']
