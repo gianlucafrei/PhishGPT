@@ -42,7 +42,7 @@ bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
-profile_images_cache = ExpiringDict(max_len=1000, max_age_seconds=30)
+profile_images_cache = ExpiringDict(max_len=1000, max_age_seconds=300)
 
 
 @app.route('/')
