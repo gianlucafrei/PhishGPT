@@ -1,6 +1,7 @@
 from flask import Flask, redirect, request, render_template, abort, jsonify, send_file, url_for
 from authlib.integrations.requests_client import OAuth2Session
 from io import BytesIO
+from expiringdict import ExpiringDict
 
 import urllib.parse
 import uuid
@@ -41,7 +42,7 @@ bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
-profile_images = {}
+profile_images_cache = ExpiringDict(max_len=1000, max_age_seconds=30)
 
 
 @app.route('/')
@@ -63,7 +64,7 @@ def login():
 
 @app.route('/profile_image/<username>')
 def get_profile_image(username):
-    image = profile_images.get(username)
+    image = profile_images_cache.get(username)
     if image:
         image_data = BytesIO(image)
         mimetype = "" if imghdr.what(image_data) else "image/svg+xml"
@@ -114,7 +115,7 @@ def send_email():
 
         gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
-        profile_images[username] = profile_image
+        profile_images_cache[username] = profile_image
 
         db.add_phish(user_info, from_api, user_data, profile_image, gpt_request, gpt_response)
 
