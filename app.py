@@ -14,11 +14,11 @@ import json
 import os
 import imghdr
 
+import openai_helper
 import proxycurl_helper
 from db import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
 from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
-from openai_helper import generate_phishing_email
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
@@ -113,7 +113,7 @@ def send_email():
             user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
             profile_image = requests.get(user_data['profile_pic_url']).content
 
-        gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
+        gpt_request, gpt_response = openai_helper.generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
         profile_images_cache[username] = profile_image
 
@@ -169,6 +169,21 @@ def authorize():
     response = redirect("/")
     response.set_cookie('token', encoded_token)
     return response
+
+
+@app.route('/readiness')
+def readiness():
+    db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
+
+    is_mongo_up = db.is_up()
+    openai_usage = openai_helper.get_usage(app.config["OPENAI_API_KEY"])
+    proxycurl_credit = proxycurl_helper.get_credits(app.config["NEBULA_API_KEY"])
+
+    return {
+        'mongo_connection': is_mongo_up,
+        'openai_usage': openai_usage,
+        'proxycurl_credit': proxycurl_credit
+    }
 
 
 # Checks the validity of a token
