@@ -20,6 +20,7 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> tuple[dict, str]
     user_information += (profile["occupation"] or "") + "\n"
     user_information += (profile["headline"] or "") + "\n"
 
+    user_information += "\n"
     experiences = profile["experiences"]
     if experiences:
         user_information += "Work experiences:\n"
@@ -27,7 +28,6 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> tuple[dict, str]
             user_information += experience["title"] + " at " + experience["company"] + "\n"
 
     user_information += "\n"
-
     educations = profile["education"]
     if educations:
         user_information += "Attended schools:\n"
