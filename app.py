@@ -137,7 +137,6 @@ def send_email():
         })
 
 
-# This endpoint is called when the user is redirected back from linked in
 @app.route('/oidc_callback')
 def authorize():
     # Exchange access code for authorization token
