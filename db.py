@@ -2,6 +2,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import datetime
 
+from pymongo.errors import ServerSelectionTimeoutError
+
 
 class DB:
     __instance_dict = {}
@@ -14,6 +16,13 @@ class DB:
 
     def __init__(self, connection: str, db_name: str, user: str, password: str):
         self.db = MongoClient(f"{connection}", username=user, password=password)[db_name]
+
+    def is_up(self) -> bool:
+        try:
+            self.db.client.server_info()
+            return True
+        except ServerSelectionTimeoutError:
+            return False
 
     def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, mail: str):
         collection = "phishes"
