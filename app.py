@@ -1,5 +1,7 @@
-from flask import Flask, redirect, request, render_template, abort, jsonify, send_file, make_response
+from flask import Flask, redirect, request, render_template, abort, jsonify, send_file, url_for, make_response
 from authlib.integrations.requests_client import OAuth2Session
+from io import BytesIO
+from expiringdict import ExpiringDict
 
 import urllib.parse
 import uuid
@@ -13,12 +15,13 @@ import os
 import csv
 import io
 import datetime
+import imghdr
 
+import openai_helper
 import proxycurl_helper
 from db import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
 from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
-from openai_helper import generate_phishing_email
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
@@ -42,6 +45,8 @@ bytes_secret_key = binascii.unhexlify(app.config['SECRET_KEY'])
 redirect_uri = app.config['REDIRECT_URI']
 client = OAuth2Session(app.config['LINKEDIN_CLIENT_ID'], app.config['LINKEDIN_CLIENT_SECRET'], token_endpoint_auth_method='client_secret_post')
 
+profile_images_cache = ExpiringDict(max_len=1000, max_age_seconds=300)
+
 
 @app.route('/')
 def index():
@@ -58,6 +63,17 @@ def index():
 def login():
     uri, state = client.create_authorization_url("https://www.linkedin.com/oauth/v2/authorization", redirect_uri=redirect_uri, scope="r_emailaddress r_liteprofile")
     return redirect(uri)
+
+
+@app.route('/profile_image/<username>')
+def get_profile_image(username):
+    image = profile_images_cache.get(username)
+    if image:
+        image_data = BytesIO(image)
+        mimetype = "" if imghdr.what(image_data) else "image/svg+xml"
+        return send_file(image_data, mimetype=mimetype)
+    else:
+        return 'User has not been loaded yet. Cannot fetch the profile image', 404
 
 
 @app.route('/send', methods=['POST'])
@@ -87,25 +103,31 @@ def send_email():
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
 
     from_api = False
+    profile_image = None
     if username == 'example':
         with open("mocks/proxycurl/example.json", "r") as file:
             user_data = json.loads(file.read())
     else:
-        user_data = db.get_linked_in_data_by_username(username)
+        profile_image, user_data = db.get_linked_in_data_by_username(username)
 
     try:
         if not user_data:
             from_api = True
             user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
+            profile_image = requests.get(user_data['profile_pic_url']).content
 
-        gpt_request, gpt_response = generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
+        gpt_request, gpt_response = openai_helper.generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
-        db.add_phish(user_info, from_api, user_data, gpt_request, gpt_response)
+        profile_images_cache[username] = profile_image
+
+        db.add_phish(user_info, from_api, user_data, profile_image, gpt_request, gpt_response)
+
+        url_profile_image = url_for('get_profile_image', username=username, _external=True)
 
         return jsonify({
             'success': True,
             'user_response': gpt_response.strip(),
-            'profile_image': user_data['profile_pic_url']
+            'profile_image': url_profile_image
         })
     except (NubelaAuthException, NubelaProfileNotFoundException) as e:
         db.add_error(user_info, linked_in_input, type(e).__name__, e.message)
@@ -191,6 +213,21 @@ def __generate_csv(fieldnames, filename, data):
     #TODO: ERROR HANDLING
 
     return response
+
+@app.route('/readiness')
+def readiness():
+    db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
+
+    is_mongo_up = db.is_up()
+    openai_usage = openai_helper.get_usage(app.config["OPENAI_API_KEY"])
+    proxycurl_credit = proxycurl_helper.get_credits(app.config["NEBULA_API_KEY"])
+
+    return {
+        'mongo_connection': is_mongo_up,
+        'openai_usage': openai_usage,
+        'proxycurl_credit': proxycurl_credit
+    }
+
 
 # Checks the validity of a token
 def __verify_token(encoded_token):

@@ -45,6 +45,7 @@
     submitButton.addEventListener('click', function(event) {
         console.log("Let's start");
         displayLoading();
+        event.preventDefault();
 
         const data = new FormData(form);
 
@@ -83,8 +84,7 @@
                 hideLoading();
                 alert('Error: ' + error);
             });
-
-
+        return false;
     });
   </script>
 

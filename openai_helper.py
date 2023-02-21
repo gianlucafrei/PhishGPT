@@ -1,4 +1,7 @@
+import json
+
 import openai
+import requests
 from openai.error import RateLimitError
 from tenacity import *
 
@@ -20,6 +23,7 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> tuple[dict, str]
     user_information += (profile["occupation"] or "") + "\n"
     user_information += (profile["headline"] or "") + "\n"
 
+    user_information += "\n"
     experiences = profile["experiences"]
     if experiences:
         user_information += "Work experiences:\n"
@@ -27,7 +31,6 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> tuple[dict, str]
             user_information += experience["title"] + " at " + experience["company"] + "\n"
 
     user_information += "\n"
-
     educations = profile["education"]
     if educations:
         user_information += "Attended schools:\n"
@@ -49,3 +52,13 @@ def generate_phishing_email(profile: dict, openapi_key: str) -> tuple[dict, str]
 
     response = __try_to_generate_gpt_text(openai_request)
     return openai_request, response.choices[0].text
+
+
+def get_usage(openapi_key: str) -> float or bool:
+    # other undocumented endpoint: https://api.openai.com/dashboard/billing/usage
+    api_endpoint = 'https://api.openai.com/dashboard/billing/credit_grants'
+    header_dic = {'Authorization': 'Bearer ' + openapi_key}
+    response = requests.get(api_endpoint, headers=header_dic)
+    if response.status_code == 200:
+        return json.loads(response.content)['total_used']
+    return False
