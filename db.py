@@ -63,3 +63,23 @@ class DB:
             print(f"'{username}' not found in DB")
             return None
         return document[select_field]
+
+    def get_all_generated_mail(self):
+        collection = "phishes"
+        coll = self.db[collection]
+
+        projection = { 'openai_request.prompt': 1, 'mail': 1, '_id': 0 }
+        cursor = coll.find({}, projection)
+        
+        result = []
+        for doc in cursor:
+            new_doc = {}
+            for key, value in doc.items():
+                if isinstance(value, dict):
+                    for nested_key, nested_value in value.items():
+                        new_doc[f"{key}.{nested_key}"] = nested_value
+                else:
+                    new_doc[key] = value
+            result.append(new_doc)
+        
+        return result

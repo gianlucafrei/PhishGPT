@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, render_template, abort, jsonify
+from flask import Flask, redirect, request, render_template, abort, jsonify, send_file, make_response
 from authlib.integrations.requests_client import OAuth2Session
 
 import urllib.parse
@@ -10,6 +10,9 @@ import hashlib
 import binascii
 import json
 import os
+import csv
+import io
+import datetime
 
 import proxycurl_helper
 from db import DB
@@ -148,6 +151,46 @@ def authorize():
     response.set_cookie('token', encoded_token)
     return response
 
+# This endpoint can be used to generate a CSV report of the Open AI request and response
+@app.route('/export-all-mail', methods=['GET'])
+def export_all_email():
+
+    #Check whether user is authenticated and authorized to call the endpoint
+    user_info = __get_userinfo_or_false()
+    authorized_users=app.config['AUTHORIZED_USERS'].split(':')
+    if not user_info or user_info.get('email') not in authorized_users:
+        abort(401)
+
+    #Load the request and responses stored in the database
+    db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
+    data = db.get_all_generated_mail()
+ 
+    #Get the date time string for the filename
+    dt = datetime.datetime.now()
+    str_date = dt.strftime("%Y%m%d_%H%M%S")
+    filename = 'data_'+str_date+".csv"
+
+    fieldnames = ['openai_request.prompt', 'mail']
+
+    #TODO: ERROR HANDLING
+
+    return __generate_csv(fieldnames, filename, data)
+
+#Function to generate a CSV file from a dictionary
+def __generate_csv(fieldnames, filename, data):
+
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
+    writer.writeheader()
+    for item in data:
+        writer.writerow(item)
+    response = make_response(output.getvalue().encode('utf-8'))
+    response.headers['Content-Disposition'] = 'attachment; filename='+filename
+    response.headers['Content-Type'] = 'text/csv'
+
+    #TODO: ERROR HANDLING
+
+    return response
 
 # Checks the validity of a token
 def __verify_token(encoded_token):
