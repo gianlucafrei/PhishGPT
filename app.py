@@ -173,7 +173,7 @@ def authorize():
     response.set_cookie('token', encoded_token)
     return response
 
-# This endpoint can be used to generate a CSV report of the Open AI request and response
+
 @app.route('/export-all-mail', methods=['GET'])
 def export_all_email():
 
