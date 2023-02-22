@@ -224,11 +224,26 @@ def readiness():
     openai_usage = openai_helper.get_usage(app.config["OPENAI_API_KEY"])
     proxycurl_credit = proxycurl_helper.get_credits(app.config["NEBULA_API_KEY"])
 
-    return {
-        'mongo_connection': is_mongo_up,
-        'openai_usage': openai_usage,
-        'proxycurl_credit': proxycurl_credit
+    state = {
+        'mongo_connection': {'value': is_mongo_up},
+        'openai_usage': {'value': openai_usage},
+        'proxycurl_credit': {'value': proxycurl_credit}
     }
+
+    if not is_mongo_up:
+        state['mongo_connection']['error'] = 'Service is down'
+
+    if openai_usage >= float(app.config["OPENAI_THRESHOLD"]):
+        state['openai_usage']['error'] = 'Payment required'
+
+    if proxycurl_credit <= int(app.config["PROXYCURL_THRESHOLD"]):
+        state['proxycurl_credit']['error'] = 'Payment required'
+
+    success = all(['error' not in state[key] for key in state.keys()])
+    if not success:
+        abort(make_response(jsonify(message=state), 500))
+
+    return state
 
 
 # Checks the validity of a token
