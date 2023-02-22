@@ -30,7 +30,7 @@ app = Flask(__name__, instance_relative_config=True)
 for env in os.environ:
     app.config[env] = os.environ[env]
 
-if os.path.exists("config.py"):
+if os.path.exists("instance/../config.py"):
     # Load from application environment
     app.config.from_pyfile('../config.py')
 
