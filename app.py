@@ -26,14 +26,17 @@ from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundE
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
 
-if os.path.exists("instance/config.py"):
-    app.config.from_pyfile('config.py')
-
-if os.path.exists("instance/../config.py"):
-    app.config.from_pyfile('../config.py')
-
+# Load from system environment
 for env in os.environ:
     app.config[env] = os.environ[env]
+
+if os.path.exists("config.py"):
+    # Load from application environment
+    app.config.from_pyfile('../config.py')
+
+if os.path.exists("instance/config.py"):
+    # Load from private application environment
+    app.config.from_pyfile('config.py')
 
 
 # Generate a new random secret key for the cookie when starting up
@@ -175,31 +178,30 @@ def authorize():
 
 @app.route('/export-all-mail', methods=['GET'])
 def export_all_email():
-
-    #Check whether user is authenticated and authorized to call the endpoint
+    # Check whether user is authenticated and authorized to call the endpoint
     user_info = __get_userinfo_or_false()
-    authorized_users=app.config['AUTHORIZED_USERS'].split(':')
+    authorized_users = app.config['AUTHORIZED_USERS'].split(':')
     if not user_info or user_info.get('email') not in authorized_users:
         abort(401)
 
-    #Load the request and responses stored in the database
+    # Load the request and responses stored in the database
     db = DB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
     data = db.get_all_generated_mail()
  
-    #Get the date time string for the filename
+    # Get the date time string for the filename
     dt = datetime.datetime.now()
     str_date = dt.strftime("%Y%m%d_%H%M%S")
-    filename = 'data_'+str_date+".csv"
+    filename = 'data_' + str_date +".csv"
 
     fieldnames = ['openai_request.prompt', 'mail']
 
-    #TODO: ERROR HANDLING
+    # TODO: ERROR HANDLING
 
     return __generate_csv(fieldnames, filename, data)
 
-#Function to generate a CSV file from a dictionary
-def __generate_csv(fieldnames, filename, data):
 
+# Function to generate a CSV file from a dictionary
+def __generate_csv(fieldnames, filename, data):
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
     writer.writeheader()
@@ -209,9 +211,10 @@ def __generate_csv(fieldnames, filename, data):
     response.headers['Content-Disposition'] = 'attachment; filename='+filename
     response.headers['Content-Type'] = 'text/csv'
 
-    #TODO: ERROR HANDLING
+    # TODO: ERROR HANDLING
 
     return response
+
 
 @app.route('/readiness')
 def readiness():
@@ -221,11 +224,26 @@ def readiness():
     openai_usage = openai_helper.get_usage(app.config["OPENAI_API_KEY"])
     proxycurl_credit = proxycurl_helper.get_credits(app.config["NEBULA_API_KEY"])
 
-    return {
-        'mongo_connection': is_mongo_up,
-        'openai_usage': openai_usage,
-        'proxycurl_credit': proxycurl_credit
+    state = {
+        'mongo_connection': {'value': is_mongo_up},
+        'openai_usage': {'value': openai_usage},
+        'proxycurl_credit': {'value': proxycurl_credit}
     }
+
+    if not is_mongo_up:
+        state['mongo_connection']['error'] = 'Service is down'
+
+    if openai_usage >= float(app.config["OPENAI_THRESHOLD"]):
+        state['openai_usage']['error'] = 'Payment required'
+
+    if proxycurl_credit <= int(app.config["PROXYCURL_THRESHOLD"]):
+        state['proxycurl_credit']['error'] = 'Payment required'
+
+    success = all(['error' not in state[key] for key in state.keys()])
+    if not success:
+        abort(make_response(jsonify(message=state), 500))
+
+    return state
 
 
 # Checks the validity of a token
