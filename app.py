@@ -26,14 +26,17 @@ from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundE
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
 
-if os.path.exists("instance/config.py"):
-    app.config.from_pyfile('config.py')
-
-if os.path.exists("instance/../config.py"):
-    app.config.from_pyfile('../config.py')
-
+# Load from system environment
 for env in os.environ:
     app.config[env] = os.environ[env]
+
+if os.path.exists("config.py"):
+    # Load from application environment
+    app.config.from_pyfile('../config.py')
+
+if os.path.exists("instance/config.py"):
+    # Load from private application environment
+    app.config.from_pyfile('config.py')
 
 
 # Generate a new random secret key for the cookie when starting up
