@@ -22,6 +22,7 @@ import proxycurl_helper
 from db import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
 from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
+from exceptions.nubela_profile_not_enough_information_exception import NubelaProfileNotEnoughInformationException
 
 # Setup application
 app = Flask(__name__, instance_relative_config=True)
@@ -119,6 +120,8 @@ def send_email():
             user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
             profile_image = requests.get(user_data['profile_pic_url']).content
 
+        proxycurl_helper.check_enough_information_in_profile(user_data)
+             
         gpt_request, gpt_response = openai_helper.generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
         profile_images_cache[username] = profile_image
@@ -132,7 +135,7 @@ def send_email():
             'user_response': gpt_response.strip(),
             'profile_image': url_profile_image
         })
-    except (NubelaAuthException, NubelaProfileNotFoundException) as e:
+    except (NubelaAuthException, NubelaProfileNotFoundException, NubelaProfileNotEnoughInformationException) as e:
         db.add_error(user_info, linked_in_input, type(e).__name__, e.message)
         return jsonify({
             'success': False,

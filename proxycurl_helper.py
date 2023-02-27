@@ -2,6 +2,7 @@ import requests
 import json
 
 from exceptions.nubela_auth_exception import NubelaAuthException
+from exceptions.nubela_profile_not_enough_information_exception import NubelaProfileNotEnoughInformationException
 from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
 
 
@@ -34,3 +35,7 @@ def get_credits(api_key: str) -> int or bool:
         return json.loads(response.content)['credit_balance']
     return False
 
+def check_enough_information_in_profile(user_data: dict) -> dict:
+    if not (bool(user_data["experiences"]) and bool(user_data["education"])):
+        raise NubelaProfileNotEnoughInformationException
+    return user_data
