@@ -1,6 +1,7 @@
 import json
 
 from instance.config import OPENAI_API_KEY
-from openai_helper import generate_phishing_email
+from services.helpers import openai_helper
 
-generate_phishing_email(json.load(open("../mocks/proxycurl/example.json")), OPENAI_API_KEY)
+openai_helper.api_key = OPENAI_API_KEY
+openai_helper.generate_phishing_email(json.load(open('../mocks/proxycurl/example.json')))
