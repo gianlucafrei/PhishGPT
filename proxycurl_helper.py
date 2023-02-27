@@ -36,6 +36,6 @@ def get_credits(api_key: str) -> int or bool:
     return False
 
 def check_enough_information_in_profile(user_data: dict) -> dict:
-    if not (bool(user_data["experiences"]) and bool(user_data["education"])):
+    if not (bool(user_data["experiences"]) or bool(user_data["education"])):
         raise NubelaProfileNotEnoughInformationException
     return user_data
