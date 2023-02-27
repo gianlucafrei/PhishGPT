@@ -116,6 +116,12 @@ def send_email():
             user_data = proxycurl_helper.load_linkedin_data(linked_in_url, app.config["NEBULA_API_KEY"])
             profile_image = requests.get(user_data['profile_pic_url']).content
 
+        if not bool(user_data["experiences"]) and not bool(user_data["education"]):
+            return jsonify({
+                'success': False,
+                'user_response': "The target profile may be a private profile"
+            })
+            
         gpt_request, gpt_response = openai_helper.generate_phishing_email(user_data, app.config["OPENAI_API_KEY"])
 
         profile_images_cache[username] = profile_image
