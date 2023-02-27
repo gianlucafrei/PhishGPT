@@ -51,7 +51,7 @@ def phish(user_info: dict, linkedin_url: str) -> dict:
         }
 
 
-def get_profile_image_by_username(username: str) -> str:
+def get_profile_image_by_username(username: str) -> bytes:
     return PROFILE_IMAGES_CACHE.get(username)
 
 

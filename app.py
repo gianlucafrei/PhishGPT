@@ -78,7 +78,7 @@ def send():
 def oidc_callback():
     encoded_token = auth_service.authorize(client, request.url, app.config['REDIRECT_URI'])
     response = redirect('/')
-    response.set_cookie('token', encoded_token)
+    response.set_cookie('token', encoded_token.decode())
     return response
 
 

@@ -1,6 +1,5 @@
 import sendgrid
-from sendgrid.helpers.mail import *
-
+from sendgrid import Email, To, Content, Mail
 
 api_key: str
 
