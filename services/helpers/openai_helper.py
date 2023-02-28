@@ -4,6 +4,7 @@ import openai
 import requests
 from openai.error import RateLimitError
 from tenacity import *
+from jinja2 import Template
 
 
 api_key: str
@@ -19,28 +20,23 @@ def __try_to_generate_gpt_text(openai_request):
 def generate_phishing_email(profile: dict) -> tuple[dict, str]:
     openai.api_key = api_key
 
-    user_information = profile['full_name'] + '\n'
+    # Load the template from the file
+    with open('templates/prompt.txt', 'r') as file:
+        template_str = file.read()
 
-    user_information += (profile['summary'] or '') + '\n'
-    user_information += (profile['occupation'] or '') + '\n'
-    user_information += (profile['headline'] or '') + '\n'
+    template = Template(template_str)
 
-    user_information += '\n'
-    experiences = profile['experiences']
-    if experiences:
-        user_information += 'Work experiences:\n'
-        for experience in experiences:
-            user_information += experience['title'] + ' at ' + experience['company'] + '\n'
+    data = {
+        'sender': 'Samuel',
+        'recipient': profile['full_name'],
+        'about': (profile['summary'] or ''),
+        'occupation': (profile['occupation'] or ''),
+        'headline': (profile['headline'] or ''),
+        'experiences': profile['experiences'],
+        'educations': profile['education']
+    }
 
-    user_information += '\n'
-    educations = profile['education']
-    if educations:
-        user_information += 'Attended schools:\n'
-        for education in educations:
-            user_information += education['school'] + '\n'
-
-    gpt_query = 'Write a well-formatted email, signed as Samuel and without the subject to the following person that makes them click a link. Mark the location of the link with [INSERT LINK HERE]. In the mail, take in consideration his Linkedin description:\n'
-    gpt_query += user_information + '\n\nThank you!'
+    gpt_query = template.render(**data)
 
     openai_request = dict(
         model='text-davinci-003',
