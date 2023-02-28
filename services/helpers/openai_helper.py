@@ -29,9 +29,9 @@ def generate_phishing_email(profile: dict) -> tuple[dict, str]:
     data = {
         'sender': 'Samuel',
         'recipient': profile['full_name'],
-        'about': (profile['summary'] or ''),
-        'occupation': (profile['occupation'] or ''),
-        'headline': (profile['headline'] or ''),
+        'about': profile['summary'] or '',
+        'occupation': profile['occupation'] or '',
+        'headline': profile['headline'] or '',
         'experiences': profile['experiences'],
         'educations': profile['education']
     }
