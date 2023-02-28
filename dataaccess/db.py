@@ -80,4 +80,4 @@ def get_ai_request_response():
     projection = {'openai_request.prompt': 1, 'mail': 1, '_id': 0}
     cursor = coll.find({}, projection)
 
-    return map(lambda doc: flatten(doc, reducer='dot'), cursor)
+    return list(map(lambda doc: flatten(doc, reducer='dot'), cursor))

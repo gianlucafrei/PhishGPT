@@ -12,7 +12,7 @@ def export_all_mails() -> tuple[str, bytes]:
     str_date = dt.strftime('%Y%m%d_%H%M%S')
     filename = 'data_' + str_date + '.csv'
 
-    fieldnames = ['openai_request.prompt', 'mail']
+    fieldnames = data[0].keys() if len(data) > 0 else []
 
     return filename, __generate_csv(fieldnames, data)
 
