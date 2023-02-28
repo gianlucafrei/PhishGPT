@@ -11,6 +11,7 @@ from dataaccess.db_dao import DbDAO
 class MongoDB(DbDAO):
 
     def __init__(self, connection: str, db_name: str, user: str, password: str):
+        print("Using MongoDB")
         self._db = MongoClient(connection, username=user, password=password)[db_name]
 
     def is_up(self) -> bool:

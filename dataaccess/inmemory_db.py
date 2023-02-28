@@ -4,6 +4,7 @@ from dataaccess.db_dao import DbDAO
 class InMemoryDB(DbDAO):
 
     def __init__(self):
+        print("Using in-memory DB")
         self._db = {}
 
     def is_up(self) -> bool:
