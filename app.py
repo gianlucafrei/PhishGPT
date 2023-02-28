@@ -4,13 +4,10 @@ from io import BytesIO
 
 
 import os
-import csv
-import io
-import datetime
 import imghdr
 
 from dataaccess import db
-from services import auth_service, phish_service, readiness_service
+from services import auth_service, phish_service, readiness_service, export_service
 from services.helpers import proxycurl_helper, openai_helper, sendgrid_helper
 
 app = Flask(__name__, instance_relative_config=True)
@@ -89,17 +86,13 @@ def export_all_email():
     if not user_info or user_info.get('email') not in authorized_users:
         abort(401)
 
-    # Load the request and responses stored in the database
-    data = db.get_all_generated_mail()
- 
-    # Get the date time string for the filename
-    dt = datetime.datetime.now()
-    str_date = dt.strftime('%Y%m%d_%H%M%S')
-    filename = 'data_' + str_date + '.csv'
+    filename, content = export_service.export_all_mails()
 
-    fieldnames = ['openai_request.prompt', 'mail']
+    response = make_response(content)
+    response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+    response.headers['Content-Type'] = 'text/csv'
 
-    return __generate_csv(fieldnames, filename, data)
+    return response
 
 
 @app.route('/readiness')
@@ -109,18 +102,6 @@ def readiness():
     if not success:
         abort(make_response(jsonify(message=state), 500))
     return state
-
-
-def __generate_csv(fieldnames, filename, data):
-    output = io.StringIO()
-    writer = csv.DictWriter(output, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-    writer.writeheader()
-    for item in data:
-        writer.writerow(item)
-    response = make_response(output.getvalue().encode('utf-8'))
-    response.headers['Content-Disposition'] = 'attachment; filename='+filename
-    response.headers['Content-Type'] = 'text/csv'
-    return response
 
 
 def __get_token_cookie() -> bytes or None:
