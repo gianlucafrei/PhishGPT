@@ -11,7 +11,27 @@ from services import auth_service, phish_service, readiness_service, export_serv
 from services.helpers import proxycurl_helper, openai_helper, sendgrid_helper
 
 app = Flask(__name__, instance_relative_config=True)
-client: OAuth2Session
+
+
+def __load_config():
+    for env in os.environ:
+        app.config[env] = os.environ[env]
+    if os.path.exists('instance/config.py'):
+        app.config.from_pyfile('config.py')
+
+
+__load_config()
+
+client = OAuth2Session(
+    app.config['LINKEDIN_CLIENT_ID'],
+    app.config['LINKEDIN_CLIENT_SECRET'],
+    token_endpoint_auth_method='client_secret_post'
+)
+
+proxycurl_helper.api_key = app.config['NEBULA_API_KEY']
+openai_helper.api_key = app.config['OPENAI_API_KEY']
+sendgrid_helper.api_key = app.config['SENDGRID_API_KEY']
+db.connect(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
 
 
 @app.route('/')
@@ -109,26 +129,6 @@ def __get_token_cookie() -> bytes or None:
     return str.encode(token) if token is not None else None
 
 
-def __load_config():
-    for env in os.environ:
-        app.config[env] = os.environ[env]
-    if os.path.exists('instance/config.py'):
-        app.config.from_pyfile('config.py')
-
-
 if __name__ == '__main__':
-    __load_config()
-
-    client = OAuth2Session(
-        app.config['LINKEDIN_CLIENT_ID'],
-        app.config['LINKEDIN_CLIENT_SECRET'],
-        token_endpoint_auth_method='client_secret_post'
-    )
-
-    proxycurl_helper.api_key = app.config['NEBULA_API_KEY']
-    openai_helper.api_key = app.config['OPENAI_API_KEY']
-    sendgrid_helper.api_key = app.config['SENDGRID_API_KEY']
-    db.connect(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
-
     app.static_url_path = '/static'
     app.run('localhost', port=8080)
