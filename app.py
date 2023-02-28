@@ -10,7 +10,7 @@ import datetime
 import imghdr
 
 from dataaccess import db
-from services import auth_service, phish_service
+from services import auth_service, phish_service, readiness_service
 from services.helpers import proxycurl_helper, openai_helper, sendgrid_helper
 
 app = Flask(__name__, instance_relative_config=True)
@@ -104,29 +104,10 @@ def export_all_email():
 
 @app.route('/readiness')
 def readiness():
-    is_mongo_up = db.is_up()
-    openai_usage = openai_helper.get_usage()
-    proxycurl_credit = proxycurl_helper.get_credits()
-
-    state = {
-        'mongo_connection': {'value': is_mongo_up},
-        'openai_usage': {'value': openai_usage},
-        'proxycurl_credit': {'value': proxycurl_credit}
-    }
-
-    if not is_mongo_up:
-        state['mongo_connection']['error'] = 'Service is down'
-
-    if openai_usage >= float(app.config['OPENAI_THRESHOLD']):
-        state['openai_usage']['error'] = 'Payment required'
-
-    if proxycurl_credit <= int(app.config['PROXYCURL_THRESHOLD']):
-        state['proxycurl_credit']['error'] = 'Payment required'
-
+    state = readiness_service.check(app.config['OPENAI_THRESHOLD'], app.config['PROXYCURL_THRESHOLD'])
     success = all(['error' not in state[key] for key in state.keys()])
     if not success:
         abort(make_response(jsonify(message=state), 500))
-
     return state
 
 
