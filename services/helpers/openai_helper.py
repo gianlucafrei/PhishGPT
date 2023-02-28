@@ -20,7 +20,6 @@ def __try_to_generate_gpt_text(openai_request):
 def generate_phishing_email(profile: dict) -> tuple[dict, str]:
     openai.api_key = api_key
 
-    # Load the template from the file
     with open('templates/prompt.txt', 'r') as file:
         template_str = file.read()
 
