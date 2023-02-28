@@ -142,8 +142,9 @@ def __generate_csv(fieldnames, filename, data):
     return response
 
 
-def __get_token_cookie() -> bytes:
-    return str.encode(request.cookies.get('token'))
+def __get_token_cookie() -> bytes or None:
+    token = request.cookies.get('token')
+    return str.encode(token) if token is not None else None
 
 
 def __load_config():
