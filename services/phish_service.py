@@ -3,7 +3,7 @@ import requests
 
 from expiringdict import ExpiringDict
 
-from dataaccess import db
+from dataaccess.DB import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
 from exceptions.nubela_profile_not_enough_information_exception import NubelaProfileNotEnoughInformationException
 from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
@@ -22,7 +22,7 @@ def phish(user_info: dict, linkedin_url: str) -> dict:
         with open('mocks/proxycurl/example.json', 'r') as file:
             user_data = json.loads(file.read())
     else:
-        profile_image, user_data = db.get_linked_in_data_by_username(linkedin_username)
+        profile_image, user_data = DB.get_instance().get_linked_in_data_by_username(linkedin_username)
 
     try:
         if not user_data:
@@ -36,7 +36,7 @@ def phish(user_info: dict, linkedin_url: str) -> dict:
 
         PROFILE_IMAGES_CACHE[linkedin_username] = profile_image
 
-        db.add_phish(user_info, from_api, user_data, profile_image, gpt_request, gpt_response)
+        DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, gpt_response)
 
         return {
             'success': True,
@@ -44,7 +44,7 @@ def phish(user_info: dict, linkedin_url: str) -> dict:
             'profile_image': None
         }
     except (NubelaAuthException, NubelaProfileNotFoundException, NubelaProfileNotEnoughInformationException) as e:
-        db.add_error(user_info, linkedin_url, type(e).__name__, e.message)
+        DB.get_instance().add_error(user_info, linkedin_url, type(e).__name__, e.message)
         return {
             'success': False,
             'user_response': e.message

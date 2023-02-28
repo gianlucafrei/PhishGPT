@@ -6,7 +6,8 @@ from io import BytesIO
 import os
 import imghdr
 
-from dataaccess import db
+from dataaccess.DB import DB
+from dataaccess.mongo_db import MongoDB
 from services import auth_service, phish_service, readiness_service, export_service
 from services.helpers import proxycurl_helper, openai_helper, sendgrid_helper
 
@@ -26,7 +27,9 @@ client = OAuth2Session(
 proxycurl_helper.api_key = app.config['NEBULA_API_KEY']
 openai_helper.api_key = app.config['OPENAI_API_KEY']
 sendgrid_helper.api_key = app.config['SENDGRID_API_KEY']
-db.connect(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
+
+db_to_use = MongoDB(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
+DB.get_instance().set_db_type(db_to_use)
 
 
 @app.route('/')

@@ -2,11 +2,11 @@ import csv
 import io
 from datetime import datetime
 
-from dataaccess import db
+from dataaccess.DB import DB
 
 
 def export_all_mails() -> tuple[str, bytes]:
-    data = db.get_ai_request_response()
+    data = DB.get_instance().get_ai_request_response()
 
     dt = datetime.now()
     str_date = dt.strftime('%Y%m%d_%H%M%S')
