@@ -6,7 +6,7 @@ from dataaccess import db
 
 
 def export_all_mails() -> tuple[str, bytes]:
-    data = db.get_all_generated_mail()
+    data = db.get_ai_request_response()
 
     dt = datetime.now()
     str_date = dt.strftime('%Y%m%d_%H%M%S')

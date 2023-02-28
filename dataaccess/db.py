@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from flatten_dict import flatten
 import datetime
 
 from pymongo.errors import ServerSelectionTimeoutError
@@ -72,22 +73,11 @@ def get_linked_in_data_by_username(username: str) -> dict or None:
     return document['profile_image'], document['linkedin_data']
 
 
-def get_all_generated_mail():
+def get_ai_request_response():
     collection = 'phishes'
     coll = db[collection]
 
-    projection = { 'openai_request.prompt': 1, 'mail': 1, '_id': 0 }
+    projection = {'openai_request.prompt': 1, 'mail': 1, '_id': 0}
     cursor = coll.find({}, projection)
 
-    result = []
-    for doc in cursor:
-        new_doc = {}
-        for key, value in doc.items():
-            if isinstance(value, dict):
-                for nested_key, nested_value in value.items():
-                    new_doc[f'{key}.{nested_key}'] = nested_value
-            else:
-                new_doc[key] = value
-        result.append(new_doc)
-
-    return result
+    return map(lambda doc: flatten(doc, reducer='dot'), cursor)
