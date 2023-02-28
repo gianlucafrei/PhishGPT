@@ -12,15 +12,10 @@ from services.helpers import proxycurl_helper, openai_helper, sendgrid_helper
 
 app = Flask(__name__, instance_relative_config=True)
 
-
-def __load_config():
-    for env in os.environ:
-        app.config[env] = os.environ[env]
-    if os.path.exists('instance/config.py'):
-        app.config.from_pyfile('config.py')
-
-
-__load_config()
+for env in os.environ:
+    app.config[env] = os.environ[env]
+if os.path.exists('instance/config.py'):
+    app.config.from_pyfile('config.py')
 
 client = OAuth2Session(
     app.config['LINKEDIN_CLIENT_ID'],
