@@ -50,5 +50,5 @@ def check_enough_information_in_profile(user_data: dict) -> dict:
 
 
 def _stop_if_user_access_not_allowed(user_max_allowed: int, mail_address: str):
-    if user_max_allowed < DB.get_instance().get_number_of_nubela_api_requests_last_hour(mail_address):
+    if user_max_allowed <= DB.get_instance().get_number_of_nubela_api_requests_last_hour(mail_address):
         raise NubelaMaxUserRequestsAllowedException()

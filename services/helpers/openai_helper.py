@@ -66,5 +66,5 @@ def get_usage() -> float or bool:
 
 
 def _stop_if_user_access_not_allowed(user_max_allowed: int, mail_address: str):
-    if user_max_allowed < DB.get_instance().get_number_of_openai_api_requests_last_hour(mail_address):
+    if user_max_allowed <= DB.get_instance().get_number_of_openai_api_requests_last_hour(mail_address):
         raise OpenAiMaxUserRequestsAllowedException()
