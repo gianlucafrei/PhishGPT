@@ -1,4 +1,5 @@
 from instance.config import SENDGRID_API_KEY
-from sendgrid_helper import send_mail
+from services.helpers import sendgrid_helper
 
-send_mail("Hello World!", "davide95.v@gmail.com", SENDGRID_API_KEY)
+sendgrid_helper.api_key = SENDGRID_API_KEY
+sendgrid_helper.send_mail('Hello World!', 'davide95.v@gmail.com')
