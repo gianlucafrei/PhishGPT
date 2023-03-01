@@ -6,7 +6,9 @@ from io import BytesIO
 import os
 import imghdr
 
-from dataaccess import db
+from dataaccess.DB import DB
+from dataaccess.inmemory_db import InMemoryDB
+from dataaccess.mongo_db import MongoDB
 from services import auth_service, phish_service, readiness_service, export_service
 from services.helpers import proxycurl_helper, openai_helper, sendgrid_helper
 
@@ -26,7 +28,19 @@ client = OAuth2Session(
 proxycurl_helper.api_key = app.config['NEBULA_API_KEY']
 openai_helper.api_key = app.config['OPENAI_API_KEY']
 sendgrid_helper.api_key = app.config['SENDGRID_API_KEY']
-db.connect(app.config['MONGO_CONNECTION'], app.config['MONGO_DB'], app.config['MONGO_USER'], app.config['MONGO_PASSWORD'])
+
+persistence_strategy = app.config['PERSISTENCE_STRATEGY']
+if persistence_strategy == 'mongo':
+    DB.get_instance().set_db_type(MongoDB(
+        app.config['MONGO_CONNECTION'],
+        app.config['MONGO_DB'],
+        app.config['MONGO_USER'],
+        app.config['MONGO_PASSWORD'])
+    )
+elif persistence_strategy == 'in-memory':
+    DB.get_instance().set_db_type(InMemoryDB())
+else:
+    raise Exception("Invalid persistence name")
 
 
 @app.route('/')

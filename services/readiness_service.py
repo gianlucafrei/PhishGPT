@@ -1,9 +1,9 @@
-from dataaccess import db
+from dataaccess.DB import DB
 from services.helpers import openai_helper, proxycurl_helper
 
 
 def check(openai_threshold: str, proxycurl_threshold: str):
-    is_mongo_up = db.is_up()
+    is_mongo_up = DB.get_instance().is_up()
     openai_usage = openai_helper.get_usage()
     proxycurl_credit = proxycurl_helper.get_credits()
 
