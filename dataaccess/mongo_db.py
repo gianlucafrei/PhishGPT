@@ -78,3 +78,10 @@ class MongoDB(DbDAO):
         cursor = coll.find({}, projection)
 
         return list(map(lambda doc: flatten(doc, reducer='dot'), cursor))
+
+    def get_number_of_openai_api_requests_last_hour(self, email: str) -> int:
+        return 1
+
+    def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
+        return 1
+
