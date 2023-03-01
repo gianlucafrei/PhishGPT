@@ -27,6 +27,7 @@ def generate_phishing_email(profile: dict) -> tuple[dict, str]:
 
     data = {
         'sender': 'Samuel',
+        'year': 2023,
         'recipient': profile['full_name'],
         'about': profile['summary'] or '',
         'occupation': profile['occupation'] or '',
@@ -48,7 +49,7 @@ def generate_phishing_email(profile: dict) -> tuple[dict, str]:
     )
 
     response = __try_to_generate_gpt_text(openai_request)
-    return openai_request, response.choices[0].text
+    return openai_request, response.choices[0].text.strip()
 
 
 def get_usage() -> float or bool:
@@ -59,3 +60,9 @@ def get_usage() -> float or bool:
     if response.status_code == 200:
         return json.loads(response.content)['total_used']
     return False
+
+
+def extract_subject_mail(text: str) -> tuple[str, str]:
+    subject = text.split('\n')[0].split('Subject:')[1].strip()
+    mail = '\n'.join(text.split('\n')[1:]).strip()
+    return subject, mail

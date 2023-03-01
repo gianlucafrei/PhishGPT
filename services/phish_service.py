@@ -36,11 +36,13 @@ def phish(user_info: dict, linkedin_url: str) -> dict:
 
         PROFILE_IMAGES_CACHE[linkedin_username] = profile_image
 
-        DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, gpt_response)
+        subject, mail = openai_helper.extract_subject_mail(gpt_response)
+
+        DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, subject, mail)
 
         return {
             'success': True,
-            'user_response': gpt_response.strip(),
+            'user_response': gpt_response,
             'profile_image': None
         }
     except (NubelaAuthException, NubelaProfileNotFoundException, NubelaProfileNotEnoughInformationException) as e:
