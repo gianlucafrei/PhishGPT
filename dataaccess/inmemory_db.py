@@ -56,3 +56,19 @@ class InMemoryDB(DbDAO):
 
         return list(map(lambda doc: {'openai_request.prompt': doc['openai_request']['prompt'], 'mail': doc['mail']},
                         self._db.get(collection, [])))
+
+    def get_number_of_openai_api_requests_last_hour(self, email: str) -> int:
+        collection = 'phishes'
+
+        documents = list(filter(lambda doc: doc['requester']['email'] == email,
+                                self._db.get(collection, [])))
+
+        return len(documents)
+
+    def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
+        collection = 'phishes'
+
+        documents = list(filter(lambda doc: doc['from_api'] and doc['requester']['email'] == email,
+                                self._db.get(collection, [])))
+
+        return len(documents)

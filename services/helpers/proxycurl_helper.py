@@ -1,7 +1,9 @@
 import requests
 import json
 
+from dataaccess.DB import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
+from exceptions.nubela_max_user_requests_allowed_exception import NubelaMaxUserRequestsAllowedException
 from exceptions.nubela_profile_not_enough_information_exception import NubelaProfileNotEnoughInformationException
 from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundException
 
@@ -9,8 +11,10 @@ from exceptions.nubela_profile_not_found_exception import NubelaProfileNotFoundE
 api_key: str
 
 
-def load_linkedin_data(linkedin_url: str) -> dict:
+def load_linkedin_data(user_max_allowed: int, mail_address: str, linkedin_url: str) -> dict:
     print(f"Loading {linkedin_url} from api")
+
+    _stop_if_user_access_not_allowed(user_max_allowed, mail_address)
 
     api_endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
     header_dic = {'Authorization': 'Bearer ' + api_key}
@@ -43,3 +47,8 @@ def check_enough_information_in_profile(user_data: dict) -> dict:
     if not (bool(user_data['experiences']) or bool(user_data['education'])):
         raise NubelaProfileNotEnoughInformationException
     return user_data
+
+
+def _stop_if_user_access_not_allowed(user_max_allowed: int, mail_address: str):
+    if user_max_allowed <= DB.get_instance().get_number_of_nubela_api_requests_last_hour(mail_address):
+        raise NubelaMaxUserRequestsAllowedException

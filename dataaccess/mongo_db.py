@@ -78,3 +78,32 @@ class MongoDB(DbDAO):
         cursor = coll.find({}, projection)
 
         return list(map(lambda doc: flatten(doc, reducer='dot'), cursor))
+
+    def get_number_of_openai_api_requests_last_hour(self, email: str) -> int:
+        collection = 'phishes'
+        coll = self._db[collection]
+
+        last_hour_oid = ObjectId.from_datetime(datetime.datetime.utcnow() - datetime.timedelta(hours=1))
+        query = {
+            '$and': [
+                {'requester.email': email},
+                {'_id': {'$gte': last_hour_oid}}
+            ]
+        }
+
+        return coll.count_documents(query)
+
+    def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
+        collection = 'phishes'
+        coll = self._db[collection]
+
+        last_hour_oid = ObjectId.from_datetime(datetime.datetime.utcnow() - datetime.timedelta(hours=1))
+        query = {
+            '$and': [
+                {'requester.email': email},
+                {'from_api': True},
+                {'_id': {'$gte': last_hour_oid}}
+            ]
+        }
+
+        return coll.count_documents(query)
