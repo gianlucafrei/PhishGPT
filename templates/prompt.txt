@@ -1,4 +1,4 @@
-Write a cold outbound professional email which should make the person specified below click a link which is marked with [INSERT LINK HERE]. The email should take into consideration the person's LinkedIn information which is given below. The email should refrain from make any assumptions about the specified person. The email should be signed by {{ sender }}, who is not be from the same company as the person. The generated email should be well structured and should not include the subject line. The email is being written in 2023.
+Write a cold outbound professional email which must make the person specified below click a link which is marked with [INSERT LINK HERE]. The email must take into consideration the person's LinkedIn information which is given below. The email must refrain from make any assumptions about the specified person. The email must be signed by {{ sender }}, who is not be from the same company as the person. The generated email must be well structured including the subject. The Subject must be marked with "Subject:". The email is being written in {{ year }}.
 
 ###
 Recipient Information:
