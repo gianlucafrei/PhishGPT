@@ -35,3 +35,9 @@ class DB(DbDAO):
 
     def get_ai_request_response(self) -> list[dict]:
         return self._db_type.get_ai_request_response()
+
+    def get_number_of_openai_api_requests_last_hour(self, email: str) -> int:
+        return self._db_type.get_number_of_openai_api_requests_last_hour(email)
+
+    def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
+        return self._db_type.get_number_of_nubela_api_requests_last_hour(email)

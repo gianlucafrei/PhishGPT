@@ -87,7 +87,12 @@ def send():
         }
 
     linkedin_url = phish_service.adjust_for_linkedin_url(user_input)
-    response = phish_service.phish(user_info, linkedin_url)
+    response = phish_service.phish(
+        user_info,
+        linkedin_url,
+        int(app.config['PROXYCURL_MAX_USER_REQUESTS_HOUR']),
+        int(app.config['OPENAI_MAX_USER_REQUESTS_HOUR'])
+    )
 
     if response['success']:
         url_profile_image = url_for(

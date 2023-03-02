@@ -22,3 +22,11 @@ class DbDAO(ABC):
     @abstractmethod
     def get_ai_request_response(self) -> list[dict]:
         pass
+
+    @abstractmethod
+    def get_number_of_openai_api_requests_last_hour(self, email: str) -> int:
+        pass
+
+    @abstractmethod
+    def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
+        pass
