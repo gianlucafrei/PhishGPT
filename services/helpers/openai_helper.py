@@ -32,6 +32,7 @@ def generate_phishing_email(user_max_allowed: int, mail_address: str, profile: d
     data = {
         'sender': 'Samuel',
         'year': 2023,
+        'email_link_reference': 'trace/[DOCUMENT_ID]',
         'recipient': profile['full_name'],
         'about': profile['summary'] or '',
         'occupation': profile['occupation'] or '',
