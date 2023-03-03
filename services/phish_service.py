@@ -1,3 +1,4 @@
+import datetime
 import json
 import requests
 
@@ -72,3 +73,13 @@ def adjust_for_linkedin_url(user_input: str) -> str:
     elif user_input.endswith('/'):
         return user_input[:-1]
     return user_input
+
+
+def add_link_trace(id: str, ip_address: str, user_agent: str):
+    data = {
+        'ip_address': ip_address,
+        'user_agent': user_agent,
+        'datetime': datetime.datetime.utcnow()
+    }
+
+    DB.get_instance().add_phish_trace(id, data)

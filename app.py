@@ -115,7 +115,11 @@ def get_profile_image(username):
 
 @app.route('/trace/<email_id>')
 def trace_email_link_click(email_id: str):
-    return render_template('scam.html', data=email_id)
+    ip_address = request.remote_addr
+    user_agent = str(request.user_agent)
+    phish_service.add_link_trace(email_id, ip_address, user_agent)
+
+    return render_template('scam.html')
 
 
 @app.route('/export-all-mail', methods=['GET'])

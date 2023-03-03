@@ -30,3 +30,7 @@ class DbDAO(ABC):
     @abstractmethod
     def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
         pass
+
+    @abstractmethod
+    def add_phish_trace(self, id: str, data: dict):
+        pass

@@ -41,3 +41,6 @@ class DB(DbDAO):
 
     def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
         return self._db_type.get_number_of_nubela_api_requests_last_hour(email)
+
+    def add_phish_trace(self, id: str, data: dict):
+        self._db_type.add_phish_trace(id, data)

@@ -108,3 +108,12 @@ class MongoDB(DbDAO):
         }
 
         return coll.count_documents(query)
+
+    def add_phish_trace(self, id: str, data: dict):
+        collection = 'phishes'
+        coll = self._db[collection]
+
+        coll.update_one(
+            {"_id": ObjectId(id)},
+            {"$push": {"mail_link_trace": data}}
+        )
