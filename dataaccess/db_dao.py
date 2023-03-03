@@ -8,7 +8,7 @@ class DbDAO(ABC):
         pass
 
     @abstractmethod
-    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str):
+    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str) -> str:
         pass
 
     @abstractmethod

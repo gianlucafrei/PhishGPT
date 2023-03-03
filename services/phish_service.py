@@ -40,7 +40,9 @@ def phish(user_info: dict, linkedin_url: str, user_max_allowed_nubela: int, user
 
         subject, mail = openai_helper.extract_subject_mail(gpt_response)
 
-        DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, subject, mail)
+        id_phish = DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, subject, mail)
+
+        gpt_response = gpt_response.replace("[DOCUMENT_ID]", id_phish)
 
         return {
             'success': True,

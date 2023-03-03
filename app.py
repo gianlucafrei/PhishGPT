@@ -62,15 +62,12 @@ def login():
     return redirect(uri)
 
 
-@app.route('/profile_image/<username>')
-def get_profile_image(username):
-    image = phish_service.get_profile_image_by_username(username)
-    if image:
-        image_data = BytesIO(image)
-        mimetype = '' if imghdr.what(image_data) else 'image/svg+xml'
-        return send_file(image_data, mimetype=mimetype)
-    else:
-        return 'User has not been loaded yet. Cannot fetch the profile image', 404
+@app.route('/oidc_callback')
+def oidc_callback():
+    encoded_token = auth_service.authorize(client, request.url, app.config['REDIRECT_URI'])
+    response = redirect('/')
+    response.set_cookie('token', encoded_token.decode())
+    return response
 
 
 @app.route('/send', methods=['POST'])
@@ -105,12 +102,20 @@ def send():
     return jsonify(response)
 
 
-@app.route('/oidc_callback')
-def oidc_callback():
-    encoded_token = auth_service.authorize(client, request.url, app.config['REDIRECT_URI'])
-    response = redirect('/')
-    response.set_cookie('token', encoded_token.decode())
-    return response
+@app.route('/profile_image/<username>')
+def get_profile_image(username):
+    image = phish_service.get_profile_image_by_username(username)
+    if image:
+        image_data = BytesIO(image)
+        mimetype = '' if imghdr.what(image_data) else 'image/svg+xml'
+        return send_file(image_data, mimetype=mimetype)
+    else:
+        return 'User has not been loaded yet. Cannot fetch the profile image', 404
+
+
+@app.route('/trace/<email_id>')
+def trace_email_link_click(email_id: str):
+    return render_template('scam.html', data=email_id)
 
 
 @app.route('/export-all-mail', methods=['GET'])

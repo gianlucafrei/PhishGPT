@@ -10,7 +10,7 @@ class InMemoryDB(DbDAO):
     def is_up(self) -> bool:
         return True
 
-    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str):
+    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str) -> str:
         collection = 'phishes'
 
         data = {
@@ -24,6 +24,8 @@ class InMemoryDB(DbDAO):
         }
 
         self._db.setdefault(collection, []).append(data)
+
+        return str(len(data))
 
     def add_error(self, requester: dict, linkedin_url: str, exception_name: str, exception_message: str):
         collection = 'errors'
