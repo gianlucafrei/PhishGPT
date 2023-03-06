@@ -1,10 +1,11 @@
+import logging
 from dataaccess.db_dao import DbDAO
 
 
 class InMemoryDB(DbDAO):
 
     def __init__(self):
-        print("Using in-memory DB")
+        logging.info("Using in-memory DB")
         self._db = {}
 
     def is_up(self) -> bool:
@@ -40,7 +41,7 @@ class InMemoryDB(DbDAO):
         self._db.setdefault(collection, []).append(data)
 
     def get_linked_in_data_by_username(self, username: str) -> dict or None:
-        print(f"Loading '{username}' from DB")
+        logging.info(f"Loading '{username}' from DB")
 
         collection = 'phishes'
 
@@ -48,7 +49,7 @@ class InMemoryDB(DbDAO):
                                 self._db.get(collection, [])))
 
         if not any(documents):
-            print(f"'{username}' not found in DB")
+            logging.info(f"'{username}' not found in DB")
             return None, None
 
         document = documents[0]

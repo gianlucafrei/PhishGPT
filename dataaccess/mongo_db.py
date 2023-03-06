@@ -1,7 +1,9 @@
+import datetime
+import logging
+
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flatten_dict import flatten
-import datetime
 
 from pymongo.errors import ServerSelectionTimeoutError
 
@@ -11,7 +13,7 @@ from dataaccess.db_dao import DbDAO
 class MongoDB(DbDAO):
 
     def __init__(self, connection: str, db_name: str, user: str, password: str):
-        print("Using MongoDB")
+        logging.info("Using MongoDB")
         self._db = MongoClient(connection, username=user, password=password)[db_name]
 
     def is_up(self) -> bool:
@@ -51,7 +53,7 @@ class MongoDB(DbDAO):
         coll.insert_one(data)
 
     def get_linked_in_data_by_username(self, username: str) -> dict or None:
-        print(f"Loading '{username}' from DB")
+        logging.info(f"Loading '{username}' from DB")
 
         collection = 'phishes'
         coll = self._db[collection]
@@ -67,7 +69,7 @@ class MongoDB(DbDAO):
 
         document = coll.find_one(query)
         if not document:
-            print(f"'{username}' not found in DB")
+            logging.info(f"'{username}' not found in DB")
             return None, None
         return document['profile_image'], document['linkedin_data']
 
