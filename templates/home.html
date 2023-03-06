@@ -59,7 +59,7 @@
             .then(response => response.json())
             .then(data => {
                 hideLoading();
-                const firstElement = resultContainer.innerText === ""
+                const firstElement = resultContainer.innerHTML === ""
 
                 if (!firstElement) {
                     const hr = document.createElement("hr")
@@ -67,7 +67,7 @@
                 }
 
                 const div = document.createElement("div");
-                div.innerText = data['user_response'];
+                div.innerHTML = data['user_response'];
                 if (data['success'] === false) {
                   div.classList.add("error")
                 }
