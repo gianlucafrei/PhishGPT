@@ -1,5 +1,16 @@
-Write a cold outbound professional email which must make the person specified below click a link which is marked with [INSERT LINK HERE]. The email must take into consideration the person's LinkedIn information which is given below. The email must refrain from make any assumptions about the specified person. The email must be signed by {{ sender }}, who is not be from the same company as the person. The generated email must be well structured including the subject. The Subject must be marked with "Subject:". The email is being written in {{ year }}.
+Write a cold outbound professional email which must respect following criteria:
 
+Must not:
+- The email must not contain any placeholder
+
+Must:
+- The email must be well structured
+- The email must make the recipient click over a link formatted exactly in this way: "<a target='_blank' href='{{ email_link_reference }}'>See more</a>"
+- The email must be signed at the end by {{ sender }}, who is not from the same company as the recipient
+- The email must include the subject which must be marked with "Subject:"
+- The email is being written in {{ year }}
+- The email must refrain from make any assumptions about the recipient
+- The email must take into consideration the recipient LinkedIn information which is given below:
 ###
 Recipient Information:
 Name: {{ recipient }}
@@ -25,5 +36,3 @@ Education:
 {% endfor %}
 {% endif %}
 ###
-
-Thank you!

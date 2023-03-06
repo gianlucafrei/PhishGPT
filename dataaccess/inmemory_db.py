@@ -1,16 +1,17 @@
+import logging
 from dataaccess.db_dao import DbDAO
 
 
 class InMemoryDB(DbDAO):
 
     def __init__(self):
-        print("Using in-memory DB")
+        logging.info("Using in-memory DB")
         self._db = {}
 
     def is_up(self) -> bool:
         return True
 
-    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str):
+    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str) -> str:
         collection = 'phishes'
 
         data = {
@@ -25,6 +26,8 @@ class InMemoryDB(DbDAO):
 
         self._db.setdefault(collection, []).append(data)
 
+        return str(len(self._db[collection]))
+
     def add_error(self, requester: dict, linkedin_url: str, exception_name: str, exception_message: str):
         collection = 'errors'
 
@@ -38,7 +41,7 @@ class InMemoryDB(DbDAO):
         self._db.setdefault(collection, []).append(data)
 
     def get_linked_in_data_by_username(self, username: str) -> dict or None:
-        print(f"Loading '{username}' from DB")
+        logging.info(f"Loading '{username}' from DB")
 
         collection = 'phishes'
 
@@ -46,7 +49,7 @@ class InMemoryDB(DbDAO):
                                 self._db.get(collection, [])))
 
         if not any(documents):
-            print(f"'{username}' not found in DB")
+            logging.info(f"'{username}' not found in DB")
             return None, None
 
         document = documents[0]
@@ -90,3 +93,8 @@ class InMemoryDB(DbDAO):
                     )
                 )
         
+
+    def add_phish_trace(self, id: str, data: dict):
+        collection = 'phishes'
+
+        self._db[collection][int(id) - 1].setdefault('mail_link_trace', []).append(data)

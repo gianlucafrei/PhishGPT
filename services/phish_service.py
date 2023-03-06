@@ -1,3 +1,4 @@
+import datetime
 import json
 import requests
 
@@ -40,7 +41,9 @@ def phish(user_info: dict, linkedin_url: str, user_max_allowed_nubela: int, user
 
         subject, mail = openai_helper.extract_subject_mail(gpt_response)
 
-        DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, subject, mail)
+        id_phish = DB.get_instance().add_phish(user_info, from_api, user_data, profile_image, gpt_request, subject, mail)
+
+        gpt_response = gpt_response.replace("[DOCUMENT_ID]", id_phish)
 
         return {
             'success': True,
@@ -83,3 +86,12 @@ def get_all_phishing_email_requested_by_user(user_info: dict) -> list[dict]:
 
     return phishing_emails
 
+
+def add_link_trace(id: str, ip_address: str, user_agent: str):
+    data = {
+        'ip_address': ip_address,
+        'user_agent': user_agent,
+        'datetime': datetime.datetime.utcnow()
+    }
+
+    DB.get_instance().add_phish_trace(id, data)

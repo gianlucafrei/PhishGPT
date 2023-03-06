@@ -24,8 +24,8 @@ class DB(DbDAO):
     def is_up(self) -> bool:
         return self._db_type.is_up()
 
-    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str):
-        self._db_type.add_phish(requester, from_api, linkedin_data, profile_image, openai_request, subject, mail)
+    def add_phish(self, requester: dict, from_api: bool, linkedin_data: dict, profile_image: bytes, openai_request: dict, subject: str, mail: str) -> str:
+        return self._db_type.add_phish(requester, from_api, linkedin_data, profile_image, openai_request, subject, mail)
 
     def add_error(self, requester: dict, linkedin_url: str, exception_name: str, exception_message: str):
         self._db_type.add_error(requester, linkedin_url, exception_name, exception_message)
@@ -44,3 +44,6 @@ class DB(DbDAO):
     
     def get_previous_phishing_email_generated_by_user(self, email: str) -> list[dict]:
         return self._db_type.get_previous_phishing_email_generated_by_user(email)
+
+    def add_phish_trace(self, id: str, data: dict):
+        self._db_type.add_phish_trace(id, data)

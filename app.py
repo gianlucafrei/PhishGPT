@@ -2,7 +2,7 @@ from flask import Flask, redirect, request, render_template, abort, jsonify, sen
 from authlib.integrations.requests_client import OAuth2Session
 from io import BytesIO
 
-
+import logging
 import os
 import imghdr
 
@@ -18,6 +18,8 @@ for env in os.environ:
     app.config[env] = os.environ[env]
 if os.path.exists('instance/config.py'):
     app.config.from_pyfile('config.py')
+
+logging.getLogger().setLevel(app.config['LOGGING_LEVEL'])
 
 client = OAuth2Session(
     app.config['LINKEDIN_CLIENT_ID'],
@@ -70,15 +72,12 @@ def login():
     return redirect(uri)
 
 
-@app.route('/profile_image/<username>')
-def get_profile_image(username):
-    image = phish_service.get_profile_image_by_username(username)
-    if image:
-        image_data = BytesIO(image)
-        mimetype = '' if imghdr.what(image_data) else 'image/svg+xml'
-        return send_file(image_data, mimetype=mimetype)
-    else:
-        return 'User has not been loaded yet. Cannot fetch the profile image', 404
+@app.route('/oidc_callback')
+def oidc_callback():
+    encoded_token = auth_service.authorize(client, request.url, app.config['REDIRECT_URI'])
+    response = redirect('/')
+    response.set_cookie('token', encoded_token.decode())
+    return response
 
 
 @app.route('/send', methods=['POST'])
@@ -113,12 +112,24 @@ def send():
     return jsonify(response)
 
 
-@app.route('/oidc_callback')
-def oidc_callback():
-    encoded_token = auth_service.authorize(client, request.url, app.config['REDIRECT_URI'])
-    response = redirect('/')
-    response.set_cookie('token', encoded_token.decode())
-    return response
+@app.route('/profile_image/<username>')
+def get_profile_image(username):
+    image = phish_service.get_profile_image_by_username(username)
+    if image:
+        image_data = BytesIO(image)
+        mimetype = '' if imghdr.what(image_data) else 'image/svg+xml'
+        return send_file(image_data, mimetype=mimetype)
+    else:
+        return 'User has not been loaded yet. Cannot fetch the profile image', 404
+
+
+@app.route('/trace/<email_id>')
+def trace_email_link_click(email_id: str):
+    ip_address = request.remote_addr
+    user_agent = str(request.user_agent)
+    phish_service.add_link_trace(email_id, ip_address, user_agent)
+
+    return render_template('scam.html')
 
 
 @app.route('/export-all-mail', methods=['GET'])
