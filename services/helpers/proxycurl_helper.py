@@ -1,5 +1,6 @@
 import requests
 import json
+import logging
 
 from dataaccess.DB import DB
 from exceptions.nubela_auth_exception import NubelaAuthException
@@ -12,7 +13,7 @@ api_key: str
 
 
 def load_linkedin_data(user_max_allowed: int, mail_address: str, linkedin_url: str) -> dict:
-    print(f"Loading {linkedin_url} from api")
+    logging.info(f"Loading {linkedin_url} from api")
 
     _stop_if_user_access_not_allowed(user_max_allowed, mail_address)
 

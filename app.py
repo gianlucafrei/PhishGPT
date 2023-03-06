@@ -2,7 +2,7 @@ from flask import Flask, redirect, request, render_template, abort, jsonify, sen
 from authlib.integrations.requests_client import OAuth2Session
 from io import BytesIO
 
-
+import logging
 import os
 import imghdr
 
@@ -18,6 +18,8 @@ for env in os.environ:
     app.config[env] = os.environ[env]
 if os.path.exists('instance/config.py'):
     app.config.from_pyfile('config.py')
+
+logging.getLogger().setLevel(app.config['LOGGING_LEVEL'])
 
 client = OAuth2Session(
     app.config['LINKEDIN_CLIENT_ID'],
