@@ -30,3 +30,7 @@ class DbDAO(ABC):
     @abstractmethod
     def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
         pass
+
+    @abstractmethod
+    def get_previous_phishing_email_generated_by_user(self, email: str) -> list[dict]:
+        pass

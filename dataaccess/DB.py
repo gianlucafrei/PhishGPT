@@ -41,3 +41,6 @@ class DB(DbDAO):
 
     def get_number_of_nubela_api_requests_last_hour(self, email: str) -> int:
         return self._db_type.get_number_of_nubela_api_requests_last_hour(email)
+    
+    def get_previous_phishing_email_generated_by_user(self, email: str) -> list[dict]:
+        return self._db_type.get_previous_phishing_email_generated_by_user(email)

@@ -92,9 +92,11 @@ nav{
 
 #result-container div {
     font-family: monospace;
-    white-space: pre-wrap;
+    white-space: pre-line;
     overflow-wrap: normal;
     text-align: justify;
+    min-width: 400px;
+    max-width: 1000px;
 }
 
 #result-container hr {
