@@ -72,7 +72,7 @@
             .then(response => response.json())
             .then(data => {
                 hideLoading();
-                const firstElement = resultContainer.innerHTML.trim() === ""
+                const firstElement = resultContainer.innerHTML === ""
 
                 if (!firstElement) {
                     const hr = document.createElement("hr")
