@@ -110,7 +110,7 @@ class MongoDB(DbDAO):
         }
 
         return coll.count_documents(query)
-    
+
     def get_previous_phishing_email_generated_by_user(self, email: str) -> list[dict]:
         collection = 'phishes'
         coll = self._db[collection]
@@ -118,7 +118,7 @@ class MongoDB(DbDAO):
         query = {
             'requester.email': email
         }
-        projection = {'mail': 1, 'linkedin_data.public_identifier': 1, 'profile_image': 1, 'subject':1}
+        projection = {'mail': 1, 'linkedin_data.public_identifier': 1, 'profile_image': 1, 'subject': 1}
         cursor = coll.find(query, projection).sort('_id', -1)
         return list(map(lambda doc: flatten(doc, reducer='dot'), cursor))
 

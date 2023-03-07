@@ -74,11 +74,12 @@ def adjust_for_linkedin_url(user_input: str) -> str:
         return user_input[:-1]
     return user_input
 
+
 def get_all_phishing_email_requested_by_user(user_info: dict) -> list[dict]:
     phishing_emails = DB.get_instance().get_previous_phishing_email_generated_by_user(user_info['email'])
 
     for item in phishing_emails:
-        public_identifier = item.get('linkedin_data.public_identifier','')
+        public_identifier = item.get('linkedin_data.public_identifier', '')
 
         if public_identifier not in PROFILE_IMAGES_CACHE:
             profile_image = item.get('profile_image', '')

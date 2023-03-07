@@ -22,13 +22,12 @@
             {% set mail = email[0]|safe %}
             {% set profile_image = email[1] %}
             {% set subject = email[2] %}
+            <img src="{{ profile_image }}">
             <div>
-                <img src="{{ profile_image }}">
                 {% if subject %}
-                    Subject: {{ subject|safe }}
-                    <br>
+                    Subject: {{ subject }}
                 {% endif %}
-                {{ mail|safe }}
+                {{ mail }}
             </div>
             <hr>
         {% endfor %}
