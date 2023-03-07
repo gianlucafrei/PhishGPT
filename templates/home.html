@@ -23,10 +23,8 @@
             {% set profile_image = email[1] %}
             {% set subject = email[2] %}
             <img src="{{ profile_image }}">
-            <div>
-                {% if subject %}
-                    Subject: {{ subject }}
-                {% endif %}
+            <div>{% if subject %} Subject: {{ subject }} {% endif %}
+
                 {{ mail }}
             </div>
             {% if data.phishing_emails_list|length > 1 %}
