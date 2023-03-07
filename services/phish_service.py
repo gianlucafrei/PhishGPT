@@ -81,7 +81,7 @@ def get_all_phishing_email_requested_by_user(user_info: dict) -> list[dict]:
         public_identifier = item.get('linkedin_data.public_identifier','')
 
         if public_identifier not in PROFILE_IMAGES_CACHE:
-            profile_image = item.get('profile_image','')
+            profile_image = item.get('profile_image', '')
             PROFILE_IMAGES_CACHE[public_identifier] = profile_image
 
     return phishing_emails

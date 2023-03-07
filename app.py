@@ -50,9 +50,8 @@ def index():
     user_info = auth_service.verify_token(__get_token_cookie())
     if user_info:
         phishing_emails = phish_service.get_all_phishing_email_requested_by_user(user_info)
-
-        phishing_emails_list = [[d.get('mail','').replace('\n', '<br>'), 
-                                 url_for('get_profile_image',username=d.get('linkedin_data.public_identifier',''),_external=True), 
+        phishing_emails_list = [[d.get('mail',''), 
+                                 url_for('get_profile_image',username=d.get('linkedin_data.public_identifier',''), _external=True), 
                                  d.get('subject','')] for d in phishing_emails]
   
         data = {
@@ -61,6 +60,7 @@ def index():
         return render_template('home.html', data=data)
     else:
         return render_template('login.html')
+
 
 @app.route('/login')
 def login():
