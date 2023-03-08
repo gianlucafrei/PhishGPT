@@ -32,5 +32,9 @@ class DbDAO(ABC):
         pass
 
     @abstractmethod
+    def get_previous_phishing_email_generated_by_user(self, email: str) -> list[dict]:
+        pass
+
+    @abstractmethod
     def add_phish_trace(self, id: str, data: dict):
         pass
