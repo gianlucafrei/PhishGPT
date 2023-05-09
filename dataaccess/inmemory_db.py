@@ -77,6 +77,22 @@ class InMemoryDB(DbDAO):
 
         return len(documents)
 
+    def get_previous_phishing_email_generated_by_user(self, email: str) -> list[dict]:
+        collection = 'phishes'
+        documents = list(filter(lambda doc: doc['requester']['email'] == email,
+                                self._db.get(collection, [])))
+
+        return list(
+                    map(
+                        lambda doc: {
+                            'mail': doc['mail'],
+                            'linkedin_data.public_identifier': doc['linkedin_data']['public_identifier'],
+                            'profile_image': doc['profile_image']
+                        },
+                        documents
+                    )
+                )
+
     def add_phish_trace(self, id: str, data: dict):
         collection = 'phishes'
 

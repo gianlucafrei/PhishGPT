@@ -2,6 +2,7 @@ Write a cold outbound professional email which must respect following criteria:
 
 Must not:
 - The email must not contain any placeholder
+- The email must not contain "<" or ">" unless instructed to do so
 
 Must:
 - The email must be well structured
@@ -11,6 +12,7 @@ Must:
 - The email is being written in {{ year }}
 - The email must refrain from make any assumptions about the recipient
 - The email must take into consideration the recipient LinkedIn information which is given below:
+
 ###
 Recipient Information:
 Name: {{ recipient }}

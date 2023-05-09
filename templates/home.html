@@ -16,9 +16,22 @@
     </div>
 </form>
 
-
-
 <div id="result-container">
+    {% if data.phishing_emails_list %}
+        {% for email in data.phishing_emails_list %}
+            {% set mail = email[0]|safe %}
+            {% set profile_image = email[1] %}
+            {% set subject = email[2] %}
+            <img src="{{ profile_image }}">
+            <div>{% if subject %} Subject: {{ subject }} {% endif %}
+
+                {{ mail }}
+            </div>
+            {% if data.phishing_emails_list|length > 1 %}
+                <hr>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 </div>
 
 
