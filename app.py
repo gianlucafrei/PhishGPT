@@ -142,7 +142,7 @@ def export_all_email():
 
 @app.route('/readiness')
 def readiness():
-    state = readiness_service.check(app.config['OPENAI_THRESHOLD'], app.config['PROXYCURL_THRESHOLD'])
+    state = readiness_service.check(app.config['PROXYCURL_THRESHOLD'])
     success = all(['error' not in state[key] for key in state.keys()])
     if not success:
         abort(make_response(jsonify(message=state), 500))

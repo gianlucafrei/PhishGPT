@@ -1,7 +1,4 @@
-import json
-
 import openai
-import requests
 from openai.error import RateLimitError
 from tenacity import *
 from jinja2 import Template
@@ -55,16 +52,6 @@ def generate_phishing_email(user_max_allowed: int, mail_address: str, profile: d
 
     response = __try_to_generate_gpt_text(openai_request)
     return openai_request, response.choices[0].text.strip()
-
-
-def get_usage() -> float or bool:
-    # other undocumented endpoint: https://api.openai.com/dashboard/billing/usage
-    api_endpoint = 'https://api.openai.com/dashboard/billing/credit_grants'
-    header_dic = {'Authorization': 'Bearer ' + api_key}
-    response = requests.get(api_endpoint, headers=header_dic)
-    if response.status_code == 200:
-        return json.loads(response.content)['total_used']
-    return False
 
 
 def extract_subject_mail(text: str) -> tuple[str, str]:
